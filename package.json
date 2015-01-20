@@ -1,0 +1,27 @@
+{
+  "name": "pancakes-syrup",
+  "version": "0.0.1",
+  "description": "JavaScript based templating engine for React",
+  "main": "lib/pancakes-syrup.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gethuman/pancakes-syrup.git"
+  },
+  "keywords": [
+    "javascript",
+    "template"
+  ],
+  "author": "Jeff Whelpley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gethuman/pancakes-syrup/issues"
+  },
+  "homepage": "https://github.com/gethuman/pancakes-syrup",
+  "dependencies": {
+    "jyt": "^0.1.20"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.10",
+    "taste": "^0.1.20"
+  }
+}
