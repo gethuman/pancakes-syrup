@@ -21,7 +21,14 @@
   "dependencies": {},
   "devDependencies": {
     "batter": "0.0.9",
+    "eventstream": "0.0.3",
     "gulp": "^3.8.10",
+    "gulp-buffer": "0.0.2",
+    "gulp-concat": "^2.4.3",
+    "gulp-less": "^2.0.1",
+    "gulp-pancakes": "^0.1.41",
+    "gulp-rename": "^1.2.0",
+    "streamqueue": "^0.1.1",
     "taste": "^0.1.44"
   }
 }
