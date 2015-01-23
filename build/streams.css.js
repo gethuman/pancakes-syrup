@@ -21,7 +21,7 @@ var objMode     = { objectMode: true };
 function generateCss(gulp, opts) {
     var cssLibs = opts.cssLibs || [];
     var cssCommon = opts.cssCommon || [];
-    var cssOutput = opts.cssOutput || 'all.less';
+    var outputPrefix = opts.outputPrefix || 'app';
     var rootDir = opts.rootDir;
     var appFiles = [];
     var appLessPaths = [];
@@ -51,7 +51,7 @@ function generateCss(gulp, opts) {
             .pipe(buffer()),
         gulp.src(appFiles)
     )
-        .pipe(concat(cssOutput))
+        .pipe(concat(outputPrefix + '.all.less'))
         .pipe(less({ paths: appLessPaths }))
         .pipe(buffer());
 }

@@ -1,6 +1,6 @@
 {
   "name": "pancakes-syrup",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Deployment build tasks for pancakes projects",
   "main": "lib/pancakes-syrup.js",
   "repository": {
@@ -20,7 +20,7 @@
   "homepage": "https://github.com/gethuman/pancakes-syrup",
   "dependencies": {},
   "devDependencies": {
-    "batter": "0.0.9",
+    "batter": "0.0.10",
     "eventstream": "0.0.3",
     "gulp": "^3.8.10",
     "gulp-buffer": "0.0.2",
