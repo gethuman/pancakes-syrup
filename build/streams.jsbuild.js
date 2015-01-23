@@ -5,7 +5,7 @@
  * Streams for handling JavaScript
  */
 var concat      = require('gulp-concat');
-var eventStream = require('eventStream');
+var eventStream = require('event-stream');
 var streamqueue = require('streamqueue');
 var objMode     = { objectMode: true };
 
@@ -27,6 +27,10 @@ function generateLibJs(gulp, opts) {
  */
 function generateAppJs(appName, gulp, opts) {
     var pancakes = opts.pancakes;
+
+    if (!pancakes) {
+        throw new Error('batter.whip() must include pancakes in opts');
+    }
 
     return streamqueue(objMode,
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
@@ -61,13 +65,17 @@ function generateCommonJs(gulp, opts) {
     var clientPluginLib = opts.pancakesConfig && opts.pancakesConfig.clientPlugin &&
         opts.pancakesConfig.clientPlugin.clientLibPath;
 
+    if (!pancakes) {
+        throw new Error('batter.whip() must include pancakes in opts');
+    }
+
     if (!clientPluginLib) {
         throw new Error('No clientPlugin set in the pancakes config');
     }
 
     return streamqueue(objMode,
         gulp.src(clientPluginLib),
-        generateAppJs('common'),
+        generateAppJs('common', gulp, opts),
         gulp.src(pancakes.getPluginModules('utils'))
             .pipe(pancakes({ ngType: 'factory', transformer: 'basic', isFromPlugin: true })),
         eventStream.merge(

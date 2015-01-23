@@ -41,12 +41,12 @@ function generateCss(gulp, opts) {
     return streamqueue(objMode,
         streamqueue(objMode,
             gulp.src(cssLibs)
-                .pipe(concat())
+                .pipe(concat(outputPrefix + '.libs.less'))
                 .pipe(less())
                 .pipe(buffer()),
             gulp.src(cssCommon)
         )
-            .pipe(concat())
+            .pipe(concat(outputPrefix + '.common.less'))
             .pipe(less({ paths: commonLesPaths }))
             .pipe(buffer()),
         gulp.src(appFiles)

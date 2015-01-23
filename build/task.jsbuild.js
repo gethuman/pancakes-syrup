@@ -6,17 +6,13 @@
  *
  */
 var _           = require('lodash');
-var jsStreams   = require('./streams.js');
+var jsStreams   = require('./streams.jsbuild');
 
 module.exports = function (gulp, opts) {
     var distDir = opts.distDir || 'dist';
     var distJs = './' + distDir + '/js';
 
-    if (!opts.pancakes) {
-        throw new Error('batter.whip() must include pancakes in opts');
-    }
-
-    var custom = ['js.common'];
+    var custom = ['jsbuild.common'];
     var tasks = {
         libs: function () {
             return jsStreams.generateLibJs(gulp, opts)
@@ -26,17 +22,19 @@ module.exports = function (gulp, opts) {
             return jsStreams.generateCommonJs(gulp, opts)
                 .pipe(gulp.dest(distJs));
         },
-        'default': ['js.libs', 'js.common']
+        '': ['jsbuild.libs', 'jsbuild.custom']
     };
 
     _.each(opts.appConfigs, function (appConfig, appName) {
-        var appTaskName = 'js.' + appName;
+        var appTaskName = 'jsbuild.' + appName;
 
-        custom.push(appTaskName);
-        tasks[appTaskName] = function () {
-            jsStreams.generateAppJs(appName, gulp, opts)
-                .pipe(gulp.dest(distJs));
-        };
+        if (appName !== 'common') {
+            custom.push(appTaskName);
+            tasks[appName] = function () {
+                jsStreams.generateAppJs(appName, gulp, opts)
+                    .pipe(gulp.dest(distJs));
+            };
+        }
     });
 
     // this task is used during watch when common changes to update common + all the app files

@@ -5,11 +5,11 @@
  * Simple task to re-initialize pancakes (usually called by watch)
  */
 module.exports = function (gulp, opts) {
-    if (!opts.pancakes || !opts.pancakesConfig) {
-        throw new Error('Cannot reinit without pancakes and pancakesConfig');
-    }
-
     return function () {
+        if (!opts.pancakes || !opts.pancakesConfig) {
+            throw new Error('Cannot reinit without pancakes and pancakesConfig');
+        }
+
         opts.pancakes.init(opts.pancakesConfig);
     };
 };

@@ -4,7 +4,7 @@
  *
  * Generate the CSS and put it in the dist/css folder
  */
-var cssStreams = require('./streams.css');
+var cssStreams = require('./streams.cssbuild');
 
 module.exports = function (gulp, opts) {
     var distDir = opts.distDir || 'dist';

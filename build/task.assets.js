@@ -11,8 +11,7 @@ module.exports = function (gulp, opts) {
     var distDir = './' + (opts.distDir || 'dist') + '/';
     var assetsDir = opts.assetsDir || 'assets';
     var jsmaps = opts.jsmaps || [
-        'node_modules/angular*/*.map',
-        'node_modules/angular*/*.js'
+        'node_modules/angular*/*.map'
     ];
     var jslibs = opts.jslibs || [
         'node_modules/angular/angular.min.js',
@@ -42,6 +41,6 @@ module.exports = function (gulp, opts) {
             return gulp.src(jslibs)
                 .pipe(gulp.dest(distDir + '/js/libs'));
         },
-        '': ['img', 'html', 'font', 'jsmaps', 'jslibs']
+        '': ['assets.img', 'assets.html', 'assets.font', 'assets.jsmaps', 'assets.jslibs']
     };
 };
