@@ -5,19 +5,10 @@
  *
  * Task for moving all static files from assets to dist
  */
-var rename = require('gulp-rename');
-
 module.exports = function (gulp, opts) {
     var distDir = './' + (opts.distDir || 'dist') + '/';
     var assetsDir = opts.assetsDir || 'assets';
-    var jsmaps = opts.jsmaps || [
-        'node_modules/angular*/*.map'
-    ];
-    var jslibs = opts.jslibs || [
-        'node_modules/angular/angular.min.js',
-        'node_modules/jquery/dist/jquery.min.js',
-        'node_modules/jquery/dist/jquery.min.map'
-    ];
+    var jsAssets = opts.jsAssets;
 
     return {
         img: function () {
@@ -32,15 +23,10 @@ module.exports = function (gulp, opts) {
             return gulp.src([assetsDir + '/fonts/*'])
                 .pipe(gulp.dest(distDir + 'fonts'));
         },
-        jsmaps: function () {
-            return gulp.src(jsmaps)
-                .pipe(rename(function (path) { path.dirname = ''; }))
-                .pipe(gulp.dest('./' + distDir + '/js'));
+        js: function () {
+            return gulp.src(jsAssets)
+                .pipe(gulp.dest(distDir + '/js'));
         },
-        jslibs: function () {
-            return gulp.src(jslibs)
-                .pipe(gulp.dest(distDir + '/js/libs'));
-        },
-        '': ['assets.img', 'assets.html', 'assets.font', 'assets.jsmaps', 'assets.jslibs']
+        '': ['assets.img', 'assets.html', 'assets.font', 'assets.js']
     };
 };
