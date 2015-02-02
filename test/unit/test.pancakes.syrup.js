@@ -10,7 +10,8 @@ var target  = taste.target(name);
 
 describe('UNIT ' + name, function () {
     it('should be an empty object', function () {
-        target.should.deep.equal({ rootDir: __dirname.replace('/test/unit', '') });
+        taste.should.exist(target.rootDir);
+        target.rootDir.should.deep.equal(__dirname.replace('/test/unit', ''));
     });
 });
 

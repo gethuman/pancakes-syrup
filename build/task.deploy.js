@@ -20,20 +20,21 @@ var objMode     = { objectMode: true };
 
 module.exports = function (gulp, opts) {
     var outputPrefix = opts.outputPrefix;
-    var config = opts.config;
+    var config = opts.config || {};
     var assetsDir = opts.assetsDir || (opts.rootDir + delim + 'assets');
     var jsAssets = opts.jsAssets;
+    var awsConfig = config.aws || {};
     var s3opts = {
-        key:    config.aws.keyId,
-        secret: config.aws.secret,
-        bucket: config.aws.assets.bucket
+        key:    awsConfig.keyId,
+        secret: awsConfig.secret,
+        bucket: awsConfig.assets && awsConfig.assets.bucket
     };
 
     return {
         jscss: function (done) {
             var timestamp = (new Date()).getTime();
             var cssStream = cssbuild.generateCss(gulp, opts)
-                .pipe(rename(outputPrefix + '.all.' + timestamp + '.js'))
+                .pipe(rename(outputPrefix + '.all.' + timestamp + '.css'))
                 .pipe(minifyCSS());
             var jsStream = streamqueue(objMode,
                 jsbuild.generateLibJs(gulp, opts),
