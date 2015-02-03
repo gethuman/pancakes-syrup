@@ -5,6 +5,8 @@
  *
  * Task for moving all static files from assets to dist
  */
+var rename = require('gulp-rename');
+
 module.exports = function (gulp, opts) {
     var distDir = './' + (opts.distDir || 'dist') + '/';
     var assetsDir = opts.assetsDir || 'assets';
@@ -25,6 +27,9 @@ module.exports = function (gulp, opts) {
         },
         js: function () {
             return gulp.src(jsAssets)
+                .pipe(rename(function (path) {
+                    path.dirname = '';
+                }))
                 .pipe(gulp.dest(distDir + '/js'));
         },
         '': ['assets.img', 'assets.html', 'assets.font', 'assets.js']
