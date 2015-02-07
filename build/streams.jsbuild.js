@@ -32,9 +32,13 @@ function generateAppJs(appName, gulp, opts) {
         throw new Error('batter.whip() must include pancakes in opts');
     }
 
+    // this is a one off case where we need to ensure page helper has a client side implementation
+    //TODO: see if we can make this cleaner in the future
+    var pageHelper = pancakes.cook('pageHelper');
+
     return streamqueue(objMode,
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
-            .pipe(pancakes({ transformer: 'app' })),
+            .pipe(pancakes({ transformer: 'app', pageHelper: pageHelper })),
         gulp.src(['app/' + appName + '/ng.config/*.js'])
             .pipe(pancakes({ ngType: 'config', transformer: 'basic', isClient: true })),
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
@@ -64,6 +68,8 @@ function generateCommonJs(gulp, opts) {
     var pancakes = opts.pancakes;
     var clientPluginLib = opts.pancakesConfig && opts.pancakesConfig.clientPlugin &&
         opts.pancakesConfig.clientPlugin.clientLibPath;
+
+    //var clientPluginLib = '/Users/jeffwhelpley/gethuman/modules/pancakes-angular/dist/pancakes.angular.min.js';
 
     if (!pancakes) {
         throw new Error('batter.whip() must include pancakes in opts');
