@@ -1,5 +1,4 @@
 /**
- * Copyright 2014 GetHuman LLC
  * Author: Jeff Whelpley
  * Date: 1/20/15
  *
