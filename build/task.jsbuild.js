@@ -10,16 +10,19 @@ var jsStreams   = require('./streams.jsbuild');
 module.exports = function (gulp, opts) {
     var distDir = opts.distDir || 'dist';
     var distJs = './' + distDir + '/js';
+    var custom = [];
 
-    var custom = ['jsbuild.common'];
     var tasks = {
         libs: function () {
             return jsStreams.generateLibJs(gulp, opts)
                 .pipe(gulp.dest(distJs));
         },
-        common: function () {
-            return jsStreams.generateCommonJs(gulp, opts)
-                .pipe(gulp.dest(distJs));
+        common: {
+            deps: ['precompile'],
+            task: function () {
+                return jsStreams.generateCommonJs(gulp, opts)
+                    .pipe(gulp.dest(distJs));
+            }
         },
         '': ['jsbuild.libs', 'jsbuild.custom']
     };
@@ -29,15 +32,20 @@ module.exports = function (gulp, opts) {
 
         if (appName !== 'common') {
             custom.push(appTaskName);
-            tasks[appName] = function () {
-                jsStreams.generateAppJs(appName, gulp, opts)
-                    .pipe(gulp.dest(distJs));
+            tasks[appName] = {
+                deps: ['precompile'],
+                task: function () {
+                    jsStreams.generateAppJs(appName, gulp, opts)
+                        .pipe(gulp.dest(distJs));
+                }
             };
         }
     });
 
-    // this task is used during watch when common changes to update common + all the app files
-    tasks.custom = custom;
+    // this is so you can do jsbuild.custom during watch
+    if (custom.length) {
+        tasks.custom = custom;
+    }
 
     return tasks;
 };

@@ -9,11 +9,12 @@ module.exports = function (gulp, opts) {
     var tpls = [].concat(opts.tpls || 'app/**/*.html');
     var tplOutputDir = opts.tplOutputDir || 'dist/tpls';
 
-    if (!pancakes) {
-        throw new Error('batter.whip() must include pancakes in opts');
-    }
-
     return function () {
+
+        if (!pancakes) {
+            throw new Error('batter.whip() must include pancakes in opts');
+        }
+
         return gulp.src(tpls)
             .pipe(pancakes({ tpls: tpls }))
             .pipe(gulp.dest(tplOutputDir));
