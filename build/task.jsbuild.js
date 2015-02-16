@@ -10,7 +10,7 @@ var jsStreams   = require('./streams.jsbuild');
 module.exports = function (gulp, opts) {
     var distDir = opts.distDir || 'dist';
     var distJs = './' + distDir + '/js';
-    var custom = [];
+    var custom = ['jsbuild.common'];
 
     var tasks = {
         libs: function () {
