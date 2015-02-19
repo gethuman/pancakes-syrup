@@ -35,7 +35,7 @@ module.exports = function (gulp, opts) {
             tasks[appName] = {
                 deps: ['precompile'],
                 task: function () {
-                    jsStreams.generateAppJs(appName, gulp, opts)
+                    return jsStreams.generateAppJs(appName, gulp, opts)
                         .pipe(gulp.dest(distJs));
                 }
             };
