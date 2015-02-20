@@ -1,6 +1,6 @@
 {
   "name": "pancakes-syrup",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Deployment build tasks for pancakes projects",
   "main": "lib/pancakes.syrup.js",
   "repository": {
@@ -21,18 +21,18 @@
   "dependencies": {
     "event-stream": "^3.2.2",
     "gulp": "^3.8.11",
-    "gulp-awspublish": "1.0.1",
+    "gulp-awspublish": "1.0.2",
     "gulp-buffer": "0.0.2",
-    "gulp-concat": "^2.5.0",
+    "gulp-concat": "^2.5.1",
     "gulp-less": "^3.0.0",
-    "gulp-minify-css": "^0.4.5",
+    "gulp-minify-css": "^0.4.6",
     "gulp-rename": "^1.2.0",
     "gulp-uglify": "^1.1.0",
-    "lodash": "^3.2.0",
+    "lodash": "^3.3.0",
     "streamqueue": "^0.1.3"
   },
   "devDependencies": {
-    "batter": "0.0.16",
-    "taste": "^0.1.49"
+    "batter": "0.0.17",
+    "taste": "^0.1.50"
   }
 }
