@@ -25,16 +25,19 @@ function generateCss(gulp, opts) {
     var rootDir = opts.rootDir;
     var appFiles = [];
     var appLessPaths = [];
-    var commonLesPaths = [ path.join(rootDir, 'app', 'common', 'styles') ];
+    var appRootDir = path.normalize(rootDir + '/app');
+    var commonLesPaths = [ path.normalize(appRootDir + '/common/styles') ];
+    var appDir;
 
     _.each(opts.appConfigs, function (appConfig, appName) {
-        if (appName !== 'common') {
+        appDir = path.normalize(appRootDir + '/' + appName + '/');
+        if (appName !== 'common' && !appConfig.isMobile) {
             appFiles.push('app/' + appName + '/layouts/' + appName + '.layout.less');
-            appLessPaths.push(path.join(rootDir, 'app', appName, 'layouts'));
+            appLessPaths.push(appDir + 'layouts');
             appFiles.push('app/' + appName + '/pages/*.page.less');
-            appLessPaths.push(path.join(rootDir, 'app', appName, 'pages'));
+            appLessPaths.push(appDir + 'pages');
             appFiles.push('app/' + appName + '/partials/*.partial.less');
-            appLessPaths.push(path.join(rootDir, 'app', appName, 'partials'));
+            appLessPaths.push(appDir + 'partials');
         }
     });
 
@@ -56,6 +59,33 @@ function generateCss(gulp, opts) {
         .pipe(buffer());
 }
 
+/**
+ * Generate mobile app css
+ * @param appName
+ * @param gulp
+ * @param opts
+ */
+function generateMobileAppCss(appName, gulp, opts) {
+    var outputPrefix = opts.outputPrefix || 'app';
+    var rootDir = opts.rootDir;
+    var appFiles = [];
+    var appLessPaths = [];
+    var appRootDir = path.normalize(rootDir + '/app');
+    var appDir = path.normalize(appRootDir + '/' + appName + '/');
+
+    appFiles.push('app/' + appName + '/pages/*.page.less');
+    appLessPaths.push(appDir + 'pages');
+    appFiles.push('app/' + appName + '/partials/*.partial.less');
+    appLessPaths.push(appDir + 'partials');
+
+    return gulp.src(appFiles)
+        .pipe(concat(outputPrefix + '.' + appName + '.less'))
+        .pipe(less({ paths: appLessPaths }))
+        .pipe(buffer());
+}
+
+// export functions
 module.exports = {
-    generateCss: generateCss
+    generateCss: generateCss,
+    generateMobileAppCss: generateMobileAppCss
 };

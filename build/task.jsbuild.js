@@ -30,7 +30,7 @@ module.exports = function (gulp, opts) {
     _.each(opts.appConfigs, function (appConfig, appName) {
         var appTaskName = 'jsbuild.' + appName;
 
-        if (appName !== 'common') {
+        if (appName !== 'common' && !appConfig.isMobile) {
             custom.push(appTaskName);
             tasks[appName] = {
                 deps: ['precompile'],

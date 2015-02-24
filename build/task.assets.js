@@ -13,6 +13,10 @@ module.exports = function (gulp, opts) {
     var jsAssets = opts.jsAssets;
 
     return {
+        mobile: function () {
+            return gulp.src([assetsDir + '/img/*'])
+                .pipe(gulp.dest(distDir + 'img'));
+        },
         img: function () {
             return gulp.src([assetsDir + '/img/*'])
                 .pipe(gulp.dest(distDir + 'img'));
