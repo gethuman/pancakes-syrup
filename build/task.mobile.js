@@ -6,7 +6,7 @@
  */
 var _           = require('lodash');
 var path        = require('path');
-var clean       = require('gulp-clean');
+var del         = require('del');
 var concat      = require('gulp-concat');
 var streamqueue = require('streamqueue');
 var objMode     = { objectMode: true };
@@ -55,9 +55,9 @@ module.exports = function (gulp, opts) {
                     .pipe(gulp.dest(mobileAppDir + 'img'));
             };
 
-            tasks['clear' + appName] = function () {
-                return gulp.src([mobileAppDir + 'css/*', mobileAppDir + 'js/*', mobileAppDir + 'img/*'])
-                    .pipe(clean({ read: false}));
+            tasks['clean' + appName] = function (done) {
+                var glob = [mobileAppDir + 'css/*', mobileAppDir + 'js/*', mobileAppDir + 'img/*'];
+                del(glob, done);
             };
 
             tasks['watch' + appName] = function () {
