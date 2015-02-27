@@ -33,7 +33,7 @@ module.exports = function (gulp, opts) {
             tasks.js.push('mobile.js' + appName);
             tasks.css.push('mobile.css' + appName);
             tasks.img.push('mobile.img' + appName);
-            tasks.clear.push('mobile.clear' + appName);
+            tasks.clean.push('mobile.clean' + appName);
             tasks.watch.push('mobile.watch' + appName);
 
             tasks['js' + appName] = function () {

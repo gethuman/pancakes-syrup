@@ -22,7 +22,7 @@
     "del": "^1.1.1",
     "event-stream": "^3.2.2",
     "gulp": "^3.8.11",
-    "gulp-awspublish": "1.0.3",
+    "gulp-awspublish": "1.0.4",
     "gulp-buffer": "0.0.2",
     "gulp-concat": "^2.5.2",
     "gulp-less": "^3.0.1",
