@@ -20,7 +20,7 @@
   "homepage": "https://github.com/gethuman/pancakes-syrup",
   "dependencies": {
     "del": "^1.1.1",
-    "event-stream": "^3.2.2",
+    "event-stream": "^3.3.0",
     "gulp": "^3.8.11",
     "gulp-awspublish": "1.0.5",
     "gulp-buffer": "0.0.2",
@@ -29,11 +29,11 @@
     "gulp-minify-css": "^0.5.1",
     "gulp-rename": "^1.2.0",
     "gulp-uglify": "^1.1.0",
-    "lodash": "^3.3.1",
+    "lodash": "^3.4.0",
     "streamqueue": "^0.1.3"
   },
   "devDependencies": {
-    "batter": "0.0.21",
-    "taste": "^0.1.52"
+    "batter": "0.0.22",
+    "taste": "^0.1.53"
   }
 }
