@@ -15,7 +15,11 @@ var objMode     = { objectMode: true };
  * @param opts
  */
 function generateLibJs(gulp, opts) {
-    return gulp.src(opts.jsLibs)
+    var libs = opts.isMobile ?
+        [].concat(opts.jsMobileLibs) :
+        [].concat(opts.jsLibs);
+
+    return gulp.src(libs)
         .pipe(concat(opts.outputPrefix + '.libs.js'));
 }
 
@@ -68,8 +72,6 @@ function generateCommonJs(gulp, opts) {
     var pancakes = opts.pancakes;
     var clientPluginLib = opts.pancakesConfig && opts.pancakesConfig.clientPlugin &&
         opts.pancakesConfig.clientPlugin.clientLibPath;
-
-    //var clientPluginLib = '/Users/jeffwhelpley/gethuman/modules/pancakes-angular/dist/pancakes.angular.min.js';
 
     if (!pancakes) {
         throw new Error('batter.whip() must include pancakes in opts');

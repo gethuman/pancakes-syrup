@@ -59,33 +59,7 @@ function generateCss(gulp, opts) {
         .pipe(buffer());
 }
 
-/**
- * Generate mobile app css
- * @param appName
- * @param gulp
- * @param opts
- */
-function generateMobileAppCss(appName, gulp, opts) {
-    var outputPrefix = opts.outputPrefix || 'app';
-    var rootDir = opts.rootDir;
-    var appFiles = [];
-    var appLessPaths = [];
-    var appRootDir = path.normalize(rootDir + '/app');
-    var appDir = path.normalize(appRootDir + '/' + appName + '/');
-
-    appFiles.push('app/' + appName + '/pages/*.page.less');
-    appLessPaths.push(appDir + 'pages');
-    appFiles.push('app/' + appName + '/partials/*.partial.less');
-    appLessPaths.push(appDir + 'partials');
-
-    return gulp.src(appFiles)
-        .pipe(concat(outputPrefix + '.' + appName + '.less'))
-        .pipe(less({ paths: appLessPaths }))
-        .pipe(buffer());
-}
-
 // export functions
 module.exports = {
-    generateCss: generateCss,
-    generateMobileAppCss: generateMobileAppCss
+    generateCss: generateCss
 };
