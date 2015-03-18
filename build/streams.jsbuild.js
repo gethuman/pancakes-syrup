@@ -46,7 +46,7 @@ function generateAppJs(appName, gulp, opts) {
         gulp.src(['app/' + appName + '/ng.config/*.js'])
             .pipe(pancakes({ ngType: 'config', transformer: 'basic', isClient: true })),
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
-            .pipe(pancakes({ transformer: 'routing' })),
+            .pipe(pancakes({ transformer: 'routing', config: opts.config })),
         eventStream.merge(
             gulp.src([ 'app/' + appName + '/partials/*.partial.js', 'app/' + appName + '/pages/*.page.js' ])
                 .pipe(pancakes({ transformer: 'uipart' })),
