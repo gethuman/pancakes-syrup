@@ -34,7 +34,7 @@
     "streamqueue": "^0.1.3"
   },
   "devDependencies": {
-    "batter": "0.0.23",
-    "taste": "^0.1.54"
+    "batter": "0.0.24",
+    "taste": "^0.1.55"
   }
 }
