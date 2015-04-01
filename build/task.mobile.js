@@ -23,6 +23,7 @@ module.exports = function (gulp, opts) {
     var tasks = {
         layout: [],
         js: [],
+        jslib: [],
         css: [],
         img: [],
         fonts: [],
@@ -30,7 +31,7 @@ module.exports = function (gulp, opts) {
         clean: [],
         watch: [],
         maps: [],
-        '': ['mobile.assets', 'mobile.img', 'mobile.js', 'mobile.css', 'mobile.fonts', 'mobile.layout', 'mobile.maps']
+        '': ['mobile.assets', 'mobile.img', 'mobile.jslib', 'mobile.js', 'mobile.css', 'mobile.fonts', 'mobile.layout', 'mobile.maps']
     };
     var mobileAppRoot, mobileAppDir, appDir;
 
@@ -46,6 +47,7 @@ module.exports = function (gulp, opts) {
         mobileAppDir = path.normalize(mobileDir + '/' + appName + '/www');
 
         tasks.layout.push('mobile.layout' + appName);
+        tasks.jslib.push('mobile.jslib' + appName);
         tasks.js.push('mobile.js' + appName);
         tasks.css.push('mobile.css' + appName);
         tasks.img.push('mobile.img' + appName);
@@ -63,12 +65,17 @@ module.exports = function (gulp, opts) {
                 .pipe(gulp.dest(mobileAppDir));
         };
 
-        tasks['js' + appName] = function () {
+        tasks['jslib' + appName] = function () {
             return streamqueue(objMode,
                 jsStreams.generateLibJs(gulp, mobileOpts),
-                jsStreams.generateCommonJs(gulp, opts),
-                jsStreams.generateAppJs(appName, gulp, opts)
+                jsStreams.generateCommonJs(gulp, opts)
             )
+                .pipe(concat(opts.outputPrefix + '.' + appName + '.lib.js'))
+                .pipe(gulp.dest(mobileAppDir + '/js'));
+        };
+
+        tasks['js' + appName] = function () {
+            return jsStreams.generateAppJs(appName, gulp, opts)
                 .pipe(concat(opts.outputPrefix + '.' + appName + '.js'))
                 .pipe(gulp.dest(mobileAppDir + '/js'));
         };
