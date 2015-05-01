@@ -5,15 +5,11 @@
  * Streams for handling JavaScript
  */
 var concat      = require('gulp-concat');
+var file        = require('gulp-file');
 var eventStream = require('event-stream');
 var streamqueue = require('streamqueue');
 var objMode     = { objectMode: true };
 
-/**
- * Generate one combined Javascript file for a given app
- * @param gulp
- * @param opts
- */
 function generateLibJs(gulp, opts) {
     var libs = opts.isMobile ?
         [].concat(opts.jsMobileLibs) :
@@ -23,18 +19,8 @@ function generateLibJs(gulp, opts) {
         .pipe(concat(opts.outputPrefix + '.libs.js'));
 }
 
-/**
- * Generate one combined Javascript file for a given app
- * @param appName
- * @param gulp
- * @param opts
- */
-function generateAppJs(appName, gulp, opts) {
+function generateAppCore(appName, gulp, opts) {
     var pancakes = opts.pancakes;
-
-    if (!pancakes) {
-        throw new Error('batter.whip() must include pancakes in opts');
-    }
 
     // this is a one off case where we need to ensure page helper has a client side implementation
     //TODO: see if we can make this cleaner in the future
@@ -46,21 +32,92 @@ function generateAppJs(appName, gulp, opts) {
         gulp.src(['app/' + appName + '/ng.config/*.js'])
             .pipe(pancakes({ ngType: 'config', transformer: 'basic', isClient: true })),
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
-            .pipe(pancakes({ transformer: 'routing', config: opts.config })),
+            .pipe(pancakes({ transformer: 'routing', config: opts.config }))
+    )
+        .pipe(concat(opts.outputPrefix + '.' + appName + '.app.js'));
+}
+
+function generateAppUI(appName, gulp, opts) {
+    var pancakes = opts.pancakes;
+    return eventStream.merge(
+        gulp.src([
+            'app/' + appName + '/partials/*.partial.js',
+            'app/' + appName + '/pages/*.page.js'
+        ]),
+        file('blank.js', ' ', { src: true })
+    )
+        .pipe(pancakes({ transformer: 'uipart' }))
+        .pipe(concat(opts.outputPrefix + '.' + appName + '.ui.js'));
+}
+
+function generateAppUtils(appName, gulp, opts) {
+    var pancakes = opts.pancakes;
+    return eventStream.merge(
+        gulp.src(['app/' + appName + '/utils/*.js']),
+        file('blank.js', ' ', { src: true })
+    )
+        .pipe(pancakes({ ngType: 'factory', transformer: 'basic' }))
+        .pipe(concat(opts.outputPrefix + '.' + appName + '.utils.js'));
+}
+
+function generateAppOther(appName, gulp, opts) {
+    var pancakes = opts.pancakes;
+    return eventStream.merge(
+        gulp.src(['app/' + appName + '/filters/*.js'])
+            .pipe(pancakes({ ngType: 'filter', transformer: 'basic', isClient: true })),
+        gulp.src(['app/' + appName + '/ng.directives/*.js'])
+            .pipe(pancakes({ ngType: 'directive', transformer: 'basic', isClient: true })),
+        gulp.src(['app/' + appName + '/jng.directives/*.js'])
+            .pipe(pancakes({ ngType: 'directive', transformer: 'basic', isClient: true })),
+        file('blank.js', ' ', { src: true })
+    )
+        .pipe(concat(opts.outputPrefix + '.' + appName + '.other.js'));
+}
+
+function generateAppJs(appName, gulp, opts) {
+    var pancakes = opts.pancakes;
+
+    if (!pancakes) {
+        throw new Error('batter.whip() must include pancakes in opts');
+    }
+
+    return streamqueue(objMode,
+        generateAppCore(appName, gulp, opts),
         eventStream.merge(
-            gulp.src([ 'app/' + appName + '/partials/*.partial.js', 'app/' + appName + '/pages/*.page.js' ])
-                .pipe(pancakes({ transformer: 'uipart' })),
-            gulp.src(['app/' + appName + '/utils/*.js'])
-                .pipe(pancakes({ ngType: 'factory', transformer: 'basic' })),
-            gulp.src(['app/' + appName + '/filters/*.js'])
-                .pipe(pancakes({ ngType: 'filter', transformer: 'basic', isClient: true })),
-            gulp.src(['app/' + appName + '/ng.directives/*.js'])
-                .pipe(pancakes({ ngType: 'directive', transformer: 'basic', isClient: true })),
-            gulp.src(['app/' + appName + '/jng.directives/*.js'])
-                .pipe(pancakes({ ngType: 'directive', transformer: 'basic', isClient: true }))
+            generateAppUI(appName, gulp, opts),
+            generateAppUtils(appName, gulp, opts),
+            generateAppOther(appName, gulp, opts)
         )
     )
         .pipe(concat(opts.outputPrefix + '.' + appName + '.js'));
+}
+
+function generatePancakesApp(gulp, opts) {
+    var clientPlugin = (opts.pancakesConfig && opts.pancakesConfig.clientPlugin) || {};
+    var clientPluginLib = (opts.deploy ? clientPlugin.clientLibMinPath : clientPlugin.clientLibPath) || '';
+    return gulp.src(clientPluginLib)
+        .pipe(concat(opts.outputPrefix + '.pancakes.app.js'));
+}
+
+function generatePluginUtils(gulp, opts) {
+    var pancakes = opts.pancakes;
+    return gulp.src(pancakes.getPluginModules('utils'))
+        .pipe(pancakes({ ngType: 'factory', transformer: 'basic', isFromPlugin: true }))
+        .pipe(concat(opts.outputPrefix + '.plugin.utils.js'));
+}
+
+function generateUtils(gulp, opts) {
+    var pancakes = opts.pancakes;
+    return gulp.src(['utils/*.js'])
+        .pipe(pancakes({ ngType: 'factory', transformer: 'basic' }))
+        .pipe(concat(opts.outputPrefix + '.utils.js'));
+}
+
+function generateApi(gulp, opts) {
+    var pancakes = opts.pancakes;
+    return gulp.src(['services/resources/**/*.resource.js'])
+        .pipe(pancakes({ transformer: 'apiclient' }))
+        .pipe(concat(opts.outputPrefix + '.api.js'));
 }
 
 /**
@@ -70,34 +127,37 @@ function generateAppJs(appName, gulp, opts) {
  */
 function generateCommonJs(gulp, opts) {
     var pancakes = opts.pancakes;
-    var clientPluginLib = opts.pancakesConfig && opts.pancakesConfig.clientPlugin &&
-        opts.pancakesConfig.clientPlugin.clientLibPath;
 
     if (!pancakes) {
         throw new Error('batter.whip() must include pancakes in opts');
     }
 
-    if (!clientPluginLib) {
-        throw new Error('No clientPlugin set in the pancakes config');
-    }
-
     return streamqueue(objMode,
-        gulp.src(clientPluginLib),
+        generatePancakesApp(gulp, opts),
+        generatePluginUtils(gulp, opts),
         generateAppJs('common', gulp, opts),
-        gulp.src(pancakes.getPluginModules('utils'))
-            .pipe(pancakes({ ngType: 'factory', transformer: 'basic', isFromPlugin: true })),
         eventStream.merge(
-            gulp.src(['utils/*.js'])
-                .pipe(pancakes({ ngType: 'factory', transformer: 'basic' })),
-            gulp.src(['services/resources/**/*.resource.js'])
-                .pipe(pancakes({ transformer: 'apiclient' }))
+            generateUtils(gulp, opts),
+            generateApi(gulp, opts)
         )
     )
         .pipe(concat(opts.outputPrefix + '.common.js'));
 }
 
 module.exports = {
-    generateLibJs:      generateLibJs,
-    generateAppJs:      generateAppJs,
-    generateCommonJs:   generateCommonJs
+    generateLibJs:          generateLibJs,
+
+    generateAppCore:        generateAppCore,
+    generateAppUI:          generateAppUI,
+    generateAppUtils:       generateAppUtils,
+    generateAppOther:       generateAppOther,
+    generateAppJs:          generateAppJs,
+
+    generatePancakesApp:      generatePancakesApp,
+    generatePluginUtils:    generatePluginUtils,
+
+    generateUtils:          generateUtils,
+    generateApi:            generateApi,
+
+    generateCommonJs:       generateCommonJs
 };
