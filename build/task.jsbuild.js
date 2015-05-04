@@ -45,7 +45,7 @@ module.exports = function (gulp, opts) {
         api: function () {
             return jsStreams.generateApi(gulp, opts).pipe(gulp.dest(distJs));
         },
-        '': ['jsbuild.libs', 'jsbuild.pancakesApp', 'jsbuild.pluginUtils', 'jsbuild.custom', 'jsbuild.utils', 'jsbuild.api']
+        '': ['jsbuild.libs', 'jsbuild.pancakesApp', 'jsbuild.pluginUtils', 'jsbuild.apps', 'jsbuild.utils', 'jsbuild.api']
     };
 
     function addTask(appName, taskNameExtra, fnName) {
@@ -55,10 +55,14 @@ module.exports = function (gulp, opts) {
         };
     }
 
+    var apps = [];
     _.each(opts.appConfigs, function (appConfig, appName) {
         var appTaskName = 'jsbuild.' + appName;
 
         if (!appConfig.isMobile) {
+
+            // add app tasks to the list
+            apps.push(appTaskName);
 
             // for the base (i.e. jsbuild.answers)
             tasks[appName] = [appTaskName + 'App', appTaskName + 'UI', appTaskName + 'Utils', appTaskName + 'Other'];
@@ -80,8 +84,9 @@ module.exports = function (gulp, opts) {
         }
     });
 
-    // add common UI
+    // add common UI and apps
     tasks.commonUI = commonUI;
+    tasks.apps = apps;
 
     // return tasks
     return tasks;
