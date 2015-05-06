@@ -1,6 +1,6 @@
 {
   "name": "pancakes-syrup",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "description": "Deployment build tasks for pancakes projects",
   "main": "lib/pancakes.syrup.js",
   "repository": {
@@ -40,7 +40,7 @@
     "streamqueue": "^0.1.3"
   },
   "devDependencies": {
-    "batter": "0.0.31",
+    "batter": "0.0.32",
     "taste": "^0.1.60"
   }
 }
