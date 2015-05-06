@@ -7,7 +7,6 @@
 var _           = require('lodash');
 var nodemon     = require('nodemon');
 var livereload  = require('gulp-livereload');
-var gutil = require('gulp-util');
 
 module.exports = function (gulp, opts) {
     var startScript = opts.targetDir + '/start.js';
