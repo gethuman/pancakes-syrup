@@ -134,8 +134,8 @@ function generateCommonJs(gulp, opts) {
 
     return streamqueue(objMode,
         generatePancakesApp(gulp, opts),
-        generatePluginUtils(gulp, opts),
         generateAppJs('common', gulp, opts),
+        generatePluginUtils(gulp, opts),
         eventStream.merge(
             generateUtils(gulp, opts),
             generateApi(gulp, opts)
