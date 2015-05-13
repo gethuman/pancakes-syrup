@@ -31,7 +31,7 @@ module.exports = function (gulp, opts) {
 
         //gulp.watch(['middleware/**/*.js', 'services/**/*.js', 'utils/**/*.js'], ['test']);
         gulp.watch(['app/common/**/*.less'], ['cssbuild']);
-        gulp.watch([clientPluginLib], ['jsbuild.plugin']);
+        gulp.watch([clientPluginLib], ['jsbuild.pluginUtils']);
         gulp.watch(['utils/*.js'], ['jsbuild.utils']);
         gulp.watch(['services/resources/**/*.resource.js'], ['jsbuild.api']);
 
