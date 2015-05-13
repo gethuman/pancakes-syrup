@@ -22,12 +22,13 @@ var delim       = path.normalize('/');
 var objMode     = { objectMode: true };
 
 module.exports = function (gulp, opts) {
-    var timestamp = (new Date()).getTime();
-    var outputPrefix = opts.outputPrefix;
-    var config = opts.config || {};
-    var assetsDir = opts.assetsDir || (opts.rootDir + delim + 'assets');
-    var jsAssets = opts.jsAssets;
-    var awsConfig = config.aws || {};
+    var timestamp       = (new Date()).getTime();
+    var outputPrefix    = opts.outputPrefix;
+    var config          = opts.config || {};
+    var env             = opts.env;
+    var assetsDir       = opts.assetsDir || (opts.rootDir + delim + 'assets');
+    var jsAssets        = opts.jsAssets;
+    var awsConfig       = config.aws || {};
     var s3opts = {
         accessKeyId:        awsConfig.keyId,
         secretAccessKey:    awsConfig.secret,
@@ -35,6 +36,10 @@ module.exports = function (gulp, opts) {
             Bucket:         awsConfig.assets && awsConfig.assets.bucket
         }
     };
+
+    if (!env) {
+        throw new Error('env param must be set for deploy    tasks');
+    }
 
     return {
 

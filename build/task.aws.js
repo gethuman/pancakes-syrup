@@ -11,9 +11,14 @@ var _   = require('lodash');
 var aws = require('./streams.aws');
 
 module.exports = function (gulp, opts) {
-    var target = opts.target;
-    var config = opts.config || {};
-    var awsConfig = config.aws || {};
+    var target      = opts.target;
+    var config      = opts.config || {};
+    var env         = opts.env;
+    var awsConfig   = config.aws || {};
+
+    if (!env) {
+        throw new Error('env param must be set for aws tasks');
+    }
 
     // return the gulp tasks
     return {
