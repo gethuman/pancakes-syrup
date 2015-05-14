@@ -22,13 +22,9 @@ function generateLibJs(gulp, opts) {
 function generateAppCore(appName, gulp, opts) {
     var pancakes = opts.pancakes;
 
-    // this is a one off case where we need to ensure page helper has a client side implementation
-    //TODO: see if we can make this cleaner in the future
-    var pageHelper = pancakes.cook('pageHelper');
-
     return streamqueue(objMode,
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
-            .pipe(pancakes({ transformer: 'app', pageHelper: pageHelper })),
+            .pipe(pancakes({ transformer: 'app' })),
         gulp.src(['app/' + appName + '/ng.config/*.js'])
             .pipe(pancakes({ ngType: 'config', transformer: 'basic', isClient: true })),
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])

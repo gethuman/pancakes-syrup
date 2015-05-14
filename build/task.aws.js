@@ -16,10 +16,6 @@ module.exports = function (gulp, opts) {
     var env         = opts.env;
     var awsConfig   = config.aws || {};
 
-    if (!env) {
-        throw new Error('env param must be set for aws tasks');
-    }
-
     // return the gulp tasks
     return {
 
@@ -30,6 +26,10 @@ module.exports = function (gulp, opts) {
          *      aws opsworks create-deployment --command update_custom_cookbooks --stack-id {stackId} --instance-ids {instance ids}
          */
         cookbooks: function () {
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
             return aws.updateCookbooks(target, awsConfig);
         },
 
@@ -42,6 +42,9 @@ module.exports = function (gulp, opts) {
             var recipeNames = opts.recipes;
             if (!recipeNames) {
                 throw new Error('Need to pass in recipes command line param');
+            }
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
             }
 
             return aws.execRecipes(recipeNames, opts.json, target, awsConfig);
@@ -56,6 +59,10 @@ module.exports = function (gulp, opts) {
          *      aws opsworks update-app --app-id 5098939a-059e-478e-88a7-6f5966606e1b --environment "[{\"Key\":\"boo\",\"Value\":\"yeah\"}]"
          */
         env: function () {
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
             var newVars = {};
             if (opts.vars) {
                 _.each(opts.vars.split(','), function (keyValue) {
@@ -74,6 +81,10 @@ module.exports = function (gulp, opts) {
          *      aws opsworks create-deployment --command deploy --instance-ids {instance ids} --custom-json {json here}
          */
         deploy: function () {
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
             return aws.deploy(opts.vars, target, awsConfig);
         },
 
@@ -82,6 +93,10 @@ module.exports = function (gulp, opts) {
          *      gulp aws.rollback --target=web
          */
         rollback: function () {
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
             return aws.rollbackDeployment(target, awsConfig);
         },
 
@@ -91,6 +106,10 @@ module.exports = function (gulp, opts) {
          *      gulp aws.restart --target=api
          */
         restart: function () {
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
             return aws.restartApp(opts.vars, target, awsConfig);
         }
     };

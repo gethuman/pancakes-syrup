@@ -37,14 +37,14 @@ module.exports = function (gulp, opts) {
         }
     };
 
-    if (!env) {
-        throw new Error('env param must be set for deploy    tasks');
-    }
-
     return {
 
         // copy all the local assets to the target s3 bucket
         assets: function () {
+            if (!env) {
+                throw new Error('env param must be set for deploy    tasks');
+            }
+
             gutil.log('deploying assets to CDN');
             return eventStream.merge(
                 s3.uploadFiles(gulp, [assetsDir + delim + 'fonts/*'], 'fonts', s3opts),
@@ -56,6 +56,10 @@ module.exports = function (gulp, opts) {
 
         // deploy latest JavaScript and CSS
         jscss: function () {
+            if (!env) {
+                throw new Error('env param must be set for deploy    tasks');
+            }
+
             var cssName = outputPrefix + '.all.' + timestamp + '.css';
             var jsCommonName = outputPrefix + '.common.' + timestamp + '.js';
             var newFiles = [cssName, jsCommonName];
@@ -66,7 +70,7 @@ module.exports = function (gulp, opts) {
 
             var jsStream = streamqueue(objMode,
                 jsbuild.generateLibJs(gulp, opts),
-                jsbuild.generateCommonJs(gulp, opts)  //.pipe(uglify())
+                jsbuild.generateCommonJs(gulp, opts).pipe(uglify())
             ).pipe(concat(jsCommonName));
 
             //return jsStream.pipe(gulp.dest(__dirname + '/../../../'));
@@ -115,6 +119,10 @@ module.exports = function (gulp, opts) {
 
         // deploy new app; if want to set version, need to pass it in via --version=1234
         app: function () {
+            if (!env) {
+                throw new Error('env param must be set for deploy    tasks');
+            }
+
             var envOverrides = opts.version ? { 'CLIENT_VERSION': opts.version } : {};
             return aws.deploy(envOverrides, opts.target, config.aws);
         },
@@ -123,6 +131,10 @@ module.exports = function (gulp, opts) {
         '': {
             deps: ['deploy.assets', 'deploy.jscss'],
             task: function () {
+                if (!env) {
+                    throw new Error('env param must be set for deploy    tasks');
+                }
+
                 return aws.deploy({ 'CLIENT_VERSION': timestamp }, opts.target, config.aws);
             }
         }
