@@ -49,7 +49,7 @@ module.exports = function (gulp, opts) {
                 'app/' + appName + '/' + appName + '.app.js',
                 'app/' + appName + '/ng.config/*.js',
                 'app/' + appName + '/' + appName + '.app.js'
-            ], ['jsbuild.' + appName + 'Core']);
+            ], ['jsbuild.' + appName + 'App']);
             gulp.watch([
                 'app/' + appName + '/partials/*.partial.js',
                 'app/' + appName + '/pages/*.page.js'
