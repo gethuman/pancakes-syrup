@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/gethuman/pancakes-syrup",
   "dependencies": {
-    "aws-sdk": "^2.1.28",
-    "del": "^1.1.1",
+    "aws-sdk": "^2.1.29",
+    "del": "^1.2.0",
     "event-stream": "^3.3.1",
     "gulp": "^3.8.11",
-    "gulp-awspublish": "2.0.0",
+    "gulp-awspublish": "2.0.2",
     "gulp-buffer": "0.0.2",
     "gulp-concat": "^2.5.2",
     "gulp-file": "^0.2.0",
@@ -34,13 +34,13 @@
     "gulp-sass": "^2.0.1",
     "gulp-uglify": "^1.2.0",
     "gulp-util": "^3.0.4",
-    "lodash": "^3.8.0",
+    "lodash": "^3.9.1",
     "nodemon": "^1.3.7",
     "q": "^1.4.1",
     "streamqueue": "^0.1.3"
   },
   "devDependencies": {
-    "batter": "0.0.37",
-    "taste": "^0.1.63"
+    "batter": "0.0.38",
+    "taste": "^0.1.64"
   }
 }
