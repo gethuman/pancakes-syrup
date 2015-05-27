@@ -22,6 +22,9 @@ var delim       = path.normalize('/');
 var objMode     = { objectMode: true };
 
 module.exports = function (gulp, opts) {
+    opts = opts || {};
+    opts.deploy = true;
+
     var timestamp       = (new Date()).getTime();
     var outputPrefix    = opts.outputPrefix;
     var config          = opts.config || {};
@@ -132,7 +135,7 @@ module.exports = function (gulp, opts) {
             deps: ['deploy.assets', 'deploy.jscss'],
             task: function () {
                 if (!env) {
-                    throw new Error('env param must be set for deploy    tasks');
+                    throw new Error('env param must be set for deploy tasks');
                 }
 
                 return aws.deploy({ 'CLIENT_VERSION': timestamp }, opts.target, config.aws);

@@ -55,7 +55,7 @@ module.exports = function (gulp, opts) {
          * overwrite all environment variables each time. We cannot (through the AWS API)
          * update one individual value. To do that, you need to go through the AWS console.
          *
-         *      gulp aws.env --env=staging --vars=CLIENT_VERSION:123
+         *      gulp aws.env --env=staging --vars=CLIENT_VERSION:1432639096064
          *      aws opsworks update-app --app-id 5098939a-059e-478e-88a7-6f5966606e1b --environment "[{\"Key\":\"boo\",\"Value\":\"yeah\"}]"
          */
         env: function () {

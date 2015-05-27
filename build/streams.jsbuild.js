@@ -149,7 +149,7 @@ module.exports = {
     generateAppOther:       generateAppOther,
     generateAppJs:          generateAppJs,
 
-    generatePancakesApp:      generatePancakesApp,
+    generatePancakesApp:    generatePancakesApp,
     generatePluginUtils:    generatePluginUtils,
 
     generateUtils:          generateUtils,
