@@ -16,6 +16,11 @@ var objMode     = { objectMode: true };
 var jsStreams   = require('./streams.jsbuild');
 
 module.exports = function (gulp, opts) {
+    opts = opts || {};
+    opts.deploy = false;
+    opts.config = opts.config || {};
+    opts.config.isMobile = true;
+
     var pancakes = opts.pancakes;
     var mobileDir = opts.mobileDir || 'mobile';
     var assetsDir = opts.assetsDir || 'assets';
@@ -61,21 +66,25 @@ module.exports = function (gulp, opts) {
         tasks['layout' + appName] = function () {
             return gulp.src('app/' + appName + '/layouts/' + appName + '.layout.js')
                 .pipe(pancakes({ transformer: 'uipart', htmlOnly: true }))
-                .pipe(rename(appName + '.html'))
+                .pipe(rename('index.html'))
                 .pipe(gulp.dest(mobileAppDir));
         };
 
         tasks['jslib' + appName] = function () {
-            return streamqueue(objMode,
-                jsStreams.generateLibJs(gulp, mobileOpts),
-                jsStreams.generateCommonJs(gulp, opts)
-            )
+            return jsStreams.generateLibJs(gulp, mobileOpts)
                 .pipe(concat(opts.outputPrefix + '.' + appName + '.lib.js'))
                 .pipe(gulp.dest(mobileAppDir + '/js'));
         };
 
         tasks['js' + appName] = function () {
-            return jsStreams.generateAppJs(appName, gulp, opts)
+            return streamqueue(objMode,
+                jsStreams.generatePancakesApp(gulp, opts),
+                jsStreams.generateAppJs('common', gulp, opts),
+                jsStreams.generatePluginUtils(gulp, opts),
+                jsStreams.generateUtils(gulp, opts),
+                jsStreams.generateApi(gulp, opts),
+                jsStreams.generateAppJs(appName, gulp, opts)
+            )
                 .pipe(concat(opts.outputPrefix + '.' + appName + '.js'))
                 .pipe(gulp.dest(mobileAppDir + '/js'));
         };
