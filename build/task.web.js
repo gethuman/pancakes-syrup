@@ -12,7 +12,7 @@ module.exports = function (gulp, opts) {
     var startScript = opts.targetDir + '/start.js';
     var shouldLiveReload = opts.livereload && opts.livereload === 'true';
     var clientPlugin = (opts.pancakesConfig && opts.pancakesConfig.clientPlugin) || {};
-    var clientPluginLib = (opts.deploy ? clientPlugin.clientLibPath : clientPlugin.clientLibMinPath) || '';
+    var clientPluginLib = (opts.deploy ? clientPlugin.clientLibMinPath : clientPlugin.clientLibPath) || '';
 
     return function () {
         livereload.listen();
