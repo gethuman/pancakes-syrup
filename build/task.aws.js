@@ -78,7 +78,7 @@ module.exports = function (gulp, opts) {
         /**
          * Deploy the latest
          *      gulp aws.deploy --target=web
-         *      aws opsworks create-deployment --command deploy --instance-ids {instance ids} --custom-json {json here}
+         *      aws opsworks create-deployment --command "{\"Name\":\"deploy\"}" --stack-id "d008af15-b1ed-4a41-9d5d-d8f0028e0927" --instance-ids "7f50243f-9c58-4325-87d7-c1f3cc812d23" --app-id "5098939a-059e-478e-88a7-6f5966606e1b"
          */
         deploy: function () {
             if (!env) {

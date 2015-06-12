@@ -19,7 +19,9 @@ module.exports = function (gulp, opts) {
     opts = opts || {};
     opts.deploy = false;
     opts.config = opts.config || {};
-    opts.config.isMobile = true;
+
+    // need to do things in this order to avoid changes to opts affecting other tasks
+    opts = _.extend({ isMobile: true }, opts);
 
     var pancakes = opts.pancakes;
     var mobileDir = opts.mobileDir || 'mobile';
