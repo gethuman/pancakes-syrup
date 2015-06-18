@@ -17,6 +17,7 @@ var concat      = require('gulp-concat');
 var uglify      = require('gulp-uglify');
 var minifyCSS   = require('gulp-minify-css');
 var gutil       = require('gulp-util');
+var exec        = require('child_process').exec;
 var path        = require('path');
 var delim       = path.normalize('/');
 var objMode     = { objectMode: true };
@@ -130,9 +131,16 @@ module.exports = function (gulp, opts) {
             return aws.deploy(envOverrides, opts.target, config.aws);
         },
 
+        // clear the redis page cache whenever deploying
+        clearcache: function (done) {
+            exec('node batch -a cache.clear -e ' + env + ' -t page', function (err) {
+                done(err);
+            });
+        },
+
         // deploy everything (i.e. assets, jscss, code)
         '': {
-            deps: ['deploy.assets', 'deploy.jscss'],
+            deps: ['deploy.assets', 'deploy.jscss', 'deploy.clearcache'],
             task: function () {
                 if (!env) {
                     throw new Error('env param must be set for deploy tasks');
