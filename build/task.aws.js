@@ -9,7 +9,6 @@
  */
 var _       = require('lodash');
 var aws     = require('./streams.aws');
-var exec    = require('child_process').exec;
 
 module.exports = function (gulp, opts) {
     var target      = opts.target;
@@ -101,27 +100,17 @@ module.exports = function (gulp, opts) {
             return aws.rollbackDeployment(target, awsConfig);
         },
 
-        // same as task.deploy clearcache; copied here to ensure cache cleared for restart
-        clearcache: function (done) {
-            exec('node batch -a cache.clear -e ' + env + ' -t page', function (err) {
-                done(err);
-            });
-        },
-
         /**
          * Restart the node app through pm2. Also, optionally pass in changes
          * to environment variables
          *      gulp aws.restart --target=api
          */
-        restart: {
-            deps: ['aws.clearcache'],
-            task: function () {
-                if (!env) {
-                    throw new Error('env param must be set for aws tasks');
-                }
-
-                return aws.restartApp(opts.vars, target, awsConfig);
+        restart: function () {
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
             }
+
+            return aws.restartApp(opts.vars, target, awsConfig);
         }
     };
 };
