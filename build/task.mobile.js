@@ -138,8 +138,8 @@ module.exports = function (gulp, opts) {
 
         tasks['maps' + appName] = function () {
             return gulp.src(['node_modules/angular*/*.map', 'node_modules/angular*/angular*.js'])
-                .pipe(rename(function (path) {
-                    path.dirname = '';
+                .pipe(rename(function (filePath) {
+                    filePath.dirname = '';
                 }))
                 .pipe(gulp.dest(mobileAppDir + '/js'));
         };
