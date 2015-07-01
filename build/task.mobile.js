@@ -110,7 +110,8 @@ module.exports = function (gulp, opts) {
             return gulp.src([
                 appDir + 'config.xml',
                 appDir + 'ionic.project',
-                appDir + 'package.json'
+                appDir + 'package.json',
+                appDir + 'resources'
             ])
                 .pipe(gulp.dest(mobileAppRoot));
         };
