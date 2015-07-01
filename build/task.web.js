@@ -12,7 +12,7 @@ module.exports = function (gulp, opts) {
     var startScript = opts.targetDir + '/start.js';
     var shouldLiveReload = opts.livereload && opts.livereload === 'true';
     var clientPlugin = (opts.pancakesConfig && opts.pancakesConfig.clientPlugin) || {};
-    var clientPluginLib = (opts.deploy ? clientPlugin.clientLibPath : clientPlugin.clientLibMinPath) || '';
+    var clientPluginLib = (opts.deploy ? clientPlugin.clientLibMinPath : clientPlugin.clientLibPath) || '';
 
     return function () {
         livereload.listen();
@@ -31,7 +31,7 @@ module.exports = function (gulp, opts) {
 
         //gulp.watch(['middleware/**/*.js', 'services/**/*.js', 'utils/**/*.js'], ['test']);
         gulp.watch(['app/common/**/*.less'], ['cssbuild']);
-        gulp.watch([clientPluginLib], ['jsbuild.plugin']);
+        gulp.watch([clientPluginLib], ['jsbuild.pluginUtils']);
         gulp.watch(['utils/*.js'], ['jsbuild.utils']);
         gulp.watch(['services/resources/**/*.resource.js'], ['jsbuild.api']);
 
@@ -49,7 +49,7 @@ module.exports = function (gulp, opts) {
                 'app/' + appName + '/' + appName + '.app.js',
                 'app/' + appName + '/ng.config/*.js',
                 'app/' + appName + '/' + appName + '.app.js'
-            ], ['jsbuild.' + appName + 'Core']);
+            ], ['jsbuild.' + appName + 'App']);
             gulp.watch([
                 'app/' + appName + '/partials/*.partial.js',
                 'app/' + appName + '/pages/*.page.js'

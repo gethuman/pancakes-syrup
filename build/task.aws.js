@@ -8,138 +8,13 @@
  *      http://docs.aws.amazon.com/cli/latest/reference/opsworks/index.html
  */
 var _       = require('lodash');
-var Q       = require('q');
-var AWS     = require('aws-sdk');
-var gutil   = require('gulp-util');
+var aws     = require('./streams.aws');
 
 module.exports = function (gulp, opts) {
-    var config = opts.config || {};
-    var name = opts.name;
-    var awsConfig = config.aws || {};
-    var stackId = awsConfig.stackId;
-    var appId = awsConfig.appId;
-    var targetWeb = !opts.target || opts.target === 'web';
-    var targetApi = !opts.target || opts.target === 'api';
-    var targetBoth = targetWeb && targetApi;
-    var secureHints = ['KEY', 'SECRET', 'TOKEN', 'URL', 'PWD', 'PASSWORD', 'JWT'];
-
-    // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
-    var opsworks = new AWS.OpsWorks({
-        accessKeyId:        awsConfig.keyId,
-        secretAccessKey:    awsConfig.secret,
-        region:             awsConfig.uploads && awsConfig.uploads.region
-    });
-
-    /**
-     * Get the instance ids for a particular layer
-     */
-    function getInstanceIds() {
-
-        // if targeting both web and api, then return null which means ALL instances
-        if (targetBoth) {
-            return new Q();
-        }
-
-        var deferred = Q.defer();
-        var params = {
-            LayerId: targetWeb ? awsConfig.webLayerId : awsConfig.apiLayerId
-        };
-
-        opsworks.describeInstances(params, function (err, data) {
-            if (err) {
-                deferred.reject(err);
-            }
-            else if (!data || !data.Instances) {
-                deferred.resolve();
-            }
-            else {
-                deferred.resolve(data.Instances.map(function (instance) {
-                    return instance.InstanceId;
-                }));
-            }
-
-
-            err ? deferred.reject(err) : deferred.resolve(data);
-        });
-
-        return deferred.promise;
-    }
-
-    /**
-     * Run one of the createDeployment commands.
-     * @param params
-     */
-    function runCommand(params) {
-        var deferred = Q.defer();
-
-        params = params || {};
-        params.StackId = stackId;
-
-        getInstanceIds()
-            .then(function (instanceIds) {
-                if (instanceIds) {
-                    params.InstanceIds = instanceIds;
-                }
-
-                opsworks.createDeployment(params, function (err, data) {
-                    err ? deferred.reject(err) : deferred.resolve(data);
-                });
-            })
-            .catch(function (err) {
-                deferred.reject(err);
-            });
-
-        return deferred.promise;
-    }
-
-    /**
-     * Determine if an environment key should be secure or not
-     * @param envKey
-     * @returns {boolean}
-     */
-    function isSecure(envKey) {
-        var i, secureHint;
-        for (i = 0; i < secureHints.length; i++) {
-            secureHint = secureHints[i];
-
-            if (envKey.indexOf(secureHint) > -1) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Conver the command line environment vars (i.e. --vars "blah=foo,choo=moo")
-     * into custom JSON.
-     */
-    function getEnvVarsJson() {
-        var envVars = opts.vars || '';
-        var keyValues = envVars.split(',') || [];
-        var json = {};
-
-        _.each(keyValues, function (keyValue) {
-            var keyValArr = keyValue.split(':');
-            var key = keyValArr[0];
-            json[key] = keyValArr[1];
-        });
-
-        if (targetWeb && !targetApi) {
-            json.CONTAINER = 'web';
-        }
-        else if (targetApi && !targetWeb) {
-            json.CONTAINER = 'api';
-        }
-
-        return JSON.stringify({
-            deploy: {
-                app: {
-                    'environment_variables': json
-                }
-            }
-        });
-    }
+    var target      = opts.target;
+    var config      = opts.config || {};
+    var env         = opts.env;
+    var awsConfig   = config.aws || {};
 
     // return the gulp tasks
     return {
@@ -151,34 +26,28 @@ module.exports = function (gulp, opts) {
          *      aws opsworks create-deployment --command update_custom_cookbooks --stack-id {stackId} --instance-ids {instance ids}
          */
         cookbooks: function () {
-            return runCommand({
-                Command: { Name: 'update_custom_cookbooks' }
-            });
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
+            return aws.updateCookbooks(target, awsConfig);
         },
 
         /**
          * Execute arbitrary recipes. For example:
-         *      gulp aws.recipes --name=deploy::nodejs-restart --target=[web|api]
+         *      gulp aws.exec --recipes=deploy::nodejs-restart --target=[web|api]
          *      aws opsworks create-deployment --command "{\"Name\":\"execute_recipes\",\"Args\":{\"recipes\":[\"pm2\"]}}" --instance-ids {instance ids}
          */
-        recipes: function () {
-            if (!name) {
-                return Q.reject('No name specified');
+        exec: function () {
+            var recipeNames = opts.recipes;
+            if (!recipeNames) {
+                throw new Error('Need to pass in recipes command line param');
+            }
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
             }
 
-            var recipes = name.split(',');
-            var params = {
-                Command: {
-                    Name: 'execute_recipes',
-                    Args: { recipes: recipes }
-                }
-            };
-
-            if (opts.json) {
-                params.CustomJson = opts.json;
-            }
-
-            return runCommand(params);
+            return aws.execRecipes(recipeNames, opts.json, target, awsConfig);
         },
 
         /**
@@ -186,67 +55,62 @@ module.exports = function (gulp, opts) {
          * overwrite all environment variables each time. We cannot (through the AWS API)
          * update one individual value. To do that, you need to go through the AWS console.
          *
-         *      gulp aws.env --env=staging
+         *      gulp aws.env --env=staging --vars=CLIENT_VERSION:1432639096064
          *      aws opsworks update-app --app-id 5098939a-059e-478e-88a7-6f5966606e1b --environment "[{\"Key\":\"boo\",\"Value\":\"yeah\"}]"
          */
         env: function () {
-            var deferred = Q.defer();
-            var env = [];
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
 
-            // create an array of environment variables
-            _.each(config.envVars, function (val, key) {
-                var secure = isSecure(key);
-                if (key !== 'GOOGLE_KEY' && key !== 'type' && val) {
-                    gutil.log(key + '=' + val);
-                    env.push({ Key: key, Value: val, Secure: secure });
-                }
-            });
+            var newVars = {};
+            if (opts.vars) {
+                _.each(opts.vars.split(','), function (keyValue) {
+                    var keyValArr = keyValue.split(':');
+                    var key = keyValArr[0];
+                    newVars[key] = keyValArr[1];
+                });
+            }
 
-            // set up the params for updateApp
-            var params = { AppId: appId, Environment: env };
-
-            opsworks.updateApp(params, function (err, data) {
-                err ? deferred.reject(err) : deferred.resolve(data);
-            });
-
-            return deferred.promise;
+            return aws.updateEnvironmentVariables(newVars, config.envVars, awsConfig);
         },
 
         /**
          * Deploy the latest
-         *      gulp aws.deploy --vars=CLIENT_VERSION:123 --target=web
-         *      aws opsworks create-deployment --command deploy --instance-ids {instance ids} --custom-json {json here}
+         *      gulp aws.deploy --target=web
+         *      aws opsworks create-deployment --command "{\"Name\":\"deploy\"}" --stack-id "d008af15-b1ed-4a41-9d5d-d8f0028e0927" --instance-ids "7f50243f-9c58-4325-87d7-c1f3cc812d23" --app-id "5098939a-059e-478e-88a7-6f5966606e1b"
          */
         deploy: function () {
-            return runCommand({
-                Command:    { Name: 'deploy' },
-                AppId:      appId,
-                CustomJson: getEnvVarsJson()
-            });
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
+            return aws.deploy(opts.vars, target, awsConfig);
         },
 
         /**
          * Rollback to a previous version
+         *      gulp aws.rollback --target=web
          */
         rollback: function () {
-            return runCommand({
-                Command:    { Name: 'rollback' },
-                AppId:      appId
-            });
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
+            return aws.rollbackDeployment(target, awsConfig);
         },
 
         /**
          * Restart the node app through pm2. Also, optionally pass in changes
          * to environment variables
+         *      gulp aws.restart --target=api
          */
         restart: function () {
-            return runCommand({
-                Command: {
-                    Name: 'execute_recipes',
-                    Args: { recipes: ['deploy::nodejs-restart']  }
-                },
-                CustomJson: getEnvVarsJson()
-            });
+            if (!env) {
+                throw new Error('env param must be set for aws tasks');
+            }
+
+            return aws.restartApp(opts.vars, target, awsConfig);
         }
     };
 };
