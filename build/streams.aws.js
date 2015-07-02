@@ -29,18 +29,15 @@ function getOpsworks(awsConfig) {
  * @param awsConfig
  */
 function getInstanceIds(target, awsConfig) {
-    var targetWeb = !target || target === 'web';
-    var targetApi = !target || target === 'api';
-
-    // if targeting both web and api, then return null which means ALL instances
-    if (targetWeb && targetApi) {
-        return new Q();
-    }
-
     var deferred = Q.defer();
-    var params = {
-        LayerId: targetWeb ? awsConfig.webLayerId : awsConfig.apiLayerId
-    };
+    var params = {};
+
+    switch (target) {
+        case 'web': params.LayerId = awsConfig.webLayerId; break;
+        case 'api': params.LayerId = awsConfig.apiLayerId; break;
+        case 'batch': params.LayerId = awsConfig.batchLayerId; break;
+        default: return new Q();
+    }
 
     var opsworks = getOpsworks(awsConfig);
     opsworks.describeInstances(params, function (err, data) {
