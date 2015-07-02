@@ -35,10 +35,11 @@ module.exports = function (gulp, opts) {
         img: [],
         fonts: [],
         assets: [],
+        resources: [],
         clean: [],
         watch: [],
         maps: [],
-        '': ['mobile.assets', 'mobile.img', 'mobile.jslib', 'mobile.js', 'mobile.css', 'mobile.fonts', 'mobile.layout', 'mobile.maps']
+        '': ['mobile.assets', 'mobile.resources', 'mobile.img', 'mobile.jslib', 'mobile.js', 'mobile.css', 'mobile.fonts', 'mobile.layout', 'mobile.maps']
     };
     var mobileAppRoot, mobileAppDir, appDir;
 
@@ -60,6 +61,7 @@ module.exports = function (gulp, opts) {
         tasks.img.push('mobile.img' + appName);
         tasks.fonts.push('mobile.fonts' + appName);
         tasks.assets.push('mobile.assets' + appName);
+        tasks.resources.push('mobile.resources' + appName);
         tasks.clean.push('mobile.clean' + appName);
         tasks.watch.push('mobile.watch' + appName);
         tasks.maps.push('mobile.maps' + appName);
@@ -124,6 +126,13 @@ module.exports = function (gulp, opts) {
                 appDir + 'package.json'
             ])
                 .pipe(gulp.dest(mobileAppRoot));
+        };
+
+        tasks['resources' + appName] = function () {
+            return gulp.src([
+                appDir + 'resources/**/*'
+            ])
+                .pipe(gulp.dest(mobileAppRoot + '/resources'));
         };
 
         tasks['clean' + appName] = function (done) {
