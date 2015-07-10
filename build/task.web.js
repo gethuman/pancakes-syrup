@@ -4,17 +4,16 @@
  *
  * Livereload for website
  */
-var _           = require('lodash');
-var nodemon     = require('nodemon');
-var livereload  = require('gulp-livereload');
-
 module.exports = function (gulp, opts) {
-    var startScript = opts.targetDir + '/start.js';
-    var shouldLiveReload = opts.livereload && opts.livereload === 'true';
-    var clientPlugin = (opts.pancakesConfig && opts.pancakesConfig.clientPlugin) || {};
-    var clientPluginLib = (opts.deploy ? clientPlugin.clientLibMinPath : clientPlugin.clientLibPath) || '';
-
     return function () {
+        var _           = require('lodash');
+        var nodemon     = require('nodemon');
+        var livereload  = require('gulp-livereload');
+        var startScript = opts.targetDir + '/start.js';
+        var shouldLiveReload = opts.livereload && opts.livereload === 'true';
+        var clientPlugin = (opts.pancakesConfig && opts.pancakesConfig.clientPlugin) || {};
+        var clientPluginLib = (opts.deploy ? clientPlugin.clientLibMinPath : clientPlugin.clientLibPath) || '';
+
         livereload.listen();
 
         nodemon({
@@ -29,16 +28,12 @@ module.exports = function (gulp, opts) {
                 }
             });
 
-        //gulp.watch(['middleware/**/*.js', 'services/**/*.js', 'utils/**/*.js'], ['test']);
         gulp.watch(['app/common/**/*.less'], ['cssbuild']);
         gulp.watch([clientPluginLib], ['jsbuild.pluginUtils']);
         gulp.watch(['utils/*.js'], ['jsbuild.utils']);
         gulp.watch(['services/resources/**/*.resource.js'], ['jsbuild.api']);
 
         _.each(opts.pancakesConfig.modulePlugins, function (plugin) {
-
-//            gutil.log('got in plug with ' + plugin.rootDir + '/utils/*.js');
-
             gulp.watch([plugin.rootDir + '/utils/*.js'], ['jsbuild.utils']);
         });
 

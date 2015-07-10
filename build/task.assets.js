@@ -34,7 +34,7 @@ module.exports = function (gulp, opts) {
                 .pipe(rename(function (path) {
                     path.dirname = '';
                 }))
-                .pipe(gulp.dest(distDir + '/js'));
+                .pipe(gulp.dest(distDir + 'js'));
         },
         '': ['assets.img', 'assets.html', 'assets.font', 'assets.js']
     };
