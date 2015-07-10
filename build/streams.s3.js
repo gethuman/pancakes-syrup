@@ -20,7 +20,9 @@ function uploadFromStream(stream, targetDir, opts) {
         path.dirname = targetDir;
     }))
         .pipe(s3.gzip({}))
-        .pipe(publisher.publish({}))
+        .pipe(publisher.publish({
+            'Cache-Control': 'max-age=315360000, no-transform, public'
+        }))
         .pipe(s3.reporter({}));
 }
 
