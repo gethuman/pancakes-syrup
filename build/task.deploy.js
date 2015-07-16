@@ -133,7 +133,7 @@ module.exports = function (gulp, opts) {
 
         // clear the redis page cache whenever deploying
         clearcache: function (done) {
-            exec('node batch -a cache.clear -e ' + env + ' -t page', function (err) {
+            exec('node batch -a cache.clear -t page --env=' + env, function (err) {
                 done(err);
             });
         },
