@@ -115,7 +115,7 @@ module.exports = function (gulp, opts) {
         };
 
         tasks['fonts' + appName] = function () {
-            return gulp.src(['node_modules/ionic/release/fonts/*'])
+            return gulp.src(['node_modules/ionic-sdk/release/fonts/*'])
                 .pipe(gulp.dest(mobileAppDir + '/fonts'));
         };
 
