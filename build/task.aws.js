@@ -58,7 +58,7 @@ module.exports = function (gulp, opts) {
          *      gulp aws.env --env=staging --vars=CLIENT_VERSION:1432639096064
          *      aws opsworks update-app --app-id 5098939a-059e-478e-88a7-6f5966606e1b --environment "[{\"Key\":\"boo\",\"Value\":\"yeah\"}]"
          */
-        env: function () {
+        vars: function () {
             if (!env) {
                 throw new Error('env param must be set for aws tasks');
             }
