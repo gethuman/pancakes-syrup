@@ -131,16 +131,9 @@ module.exports = function (gulp, opts) {
             return aws.deploy(envOverrides, opts.target, config.aws);
         },
 
-        // clear the redis page cache whenever deploying
-        clearcache: function (done) {
-            exec('node batch -a cache.clear -t page --env=' + env, function (err) {
-                done(err);
-            });
-        },
-
         // deploy everything (i.e. assets, jscss, code)
         '': {
-            deps: ['deploy.assets', 'deploy.jscss', 'deploy.clearcache'],
+            deps: ['deploy.assets', 'deploy.jscss'],
             task: function () {
                 if (!env) {
                     throw new Error('env param must be set for deploy tasks');
