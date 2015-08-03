@@ -20,6 +20,12 @@ module.exports = function (gulp, opts) {
     opts.deploy = false;
     opts.config = opts.config || {};
 
+    if ( opts.env && opts.env !== 'dev' ) {
+        opts.config = '';
+    }
+
+    console.log('opts: ' + JSON.stringify((opts)));
+
     // need to do things in this order to avoid changes to opts affecting other tasks
     opts = _.extend({ isMobile: true }, opts);
 
@@ -30,7 +36,7 @@ module.exports = function (gulp, opts) {
     var tasks = {
         layout: [],
         js: [],
-        jslib: [],
+        //jslib: [],
         css: [],
         img: [],
         fonts: [],
@@ -39,7 +45,8 @@ module.exports = function (gulp, opts) {
         clean: [],
         watch: [],
         maps: [],
-        '': ['mobile.assets', 'mobile.resources', 'mobile.img', 'mobile.jslib', 'mobile.js', 'mobile.css', 'mobile.fonts', 'mobile.layout', 'mobile.maps']
+        '': ['mobile.assets', 'mobile.resources', 'mobile.img', 'mobile.js', 'mobile.css', 'mobile.fonts', 'mobile.layout', 'mobile.maps']
+        //'': ['mobile.assets', 'mobile.resources', 'mobile.img', 'mobile.jslib', 'mobile.js', 'mobile.css', 'mobile.fonts', 'mobile.layout', 'mobile.maps']
     };
     var mobileAppRoot, mobileAppDir, appDir;
 
@@ -55,7 +62,7 @@ module.exports = function (gulp, opts) {
         mobileAppDir = path.normalize(mobileDir + '/' + appName + '/www');
 
         tasks.layout.push('mobile.layout' + appName);
-        tasks.jslib.push('mobile.jslib' + appName);
+        //tasks.jslib.push('mobile.jslib' + appName);
         tasks.js.push('mobile.js' + appName);
         tasks.css.push('mobile.css' + appName);
         tasks.img.push('mobile.img' + appName);
@@ -74,14 +81,17 @@ module.exports = function (gulp, opts) {
                 .pipe(gulp.dest(mobileAppDir));
         };
 
+        /* // for mobile, for now, just bake it all into 1 file...
         tasks['jslib' + appName] = function () {
             return jsStreams.generateLibJs(gulp, mobileOpts)
                 .pipe(concat(opts.outputPrefix + '.' + appName + '.lib.js'))
                 .pipe(gulp.dest(mobileAppDir + '/js'));
         };
+        */
 
         tasks['js' + appName] = function () {
             return streamqueue(objMode,
+                jsStreams.generateLibJs(gulp, mobileOpts),
                 jsStreams.generatePancakesApp(gulp, opts),
                 jsStreams.generateAppJs('common', gulp, opts),
                 jsStreams.generatePluginUtils(gulp, opts),
