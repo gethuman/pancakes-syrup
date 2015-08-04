@@ -24,7 +24,7 @@ module.exports = function (gulp, opts) {
         opts.config = '';
     }
 
-    console.log('opts: ' + JSON.stringify((opts)));
+    // console.log('opts: ' + JSON.stringify((opts)));
 
     // need to do things in this order to avoid changes to opts affecting other tasks
     opts = _.extend({ isMobile: true }, opts);
