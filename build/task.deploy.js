@@ -17,7 +17,6 @@ var concat      = require('gulp-concat');
 var uglify      = require('gulp-uglify');
 var minifyCSS   = require('gulp-minify-css');
 var gutil       = require('gulp-util');
-var exec        = require('child_process').exec;
 var path        = require('path');
 var delim       = path.normalize('/');
 var objMode     = { objectMode: true };
