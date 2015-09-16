@@ -69,7 +69,7 @@ module.exports = function (gulp, opts) {
 
             var cssStream = cssbuild.generateCss(gulp, opts)
                 .pipe(rename(cssName))
-                .pipe(minifyCSS());
+                .pipe(minifyCSS({ rebase: false }));
 
             var jsStream = streamqueue(objMode,
                 jsbuild.generateLibJs(gulp, opts),
