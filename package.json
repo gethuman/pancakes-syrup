@@ -1,6 +1,6 @@
 {
   "name": "pancakes-syrup",
-  "version": "0.0.102",
+  "version": "0.0.103",
   "description": "Deployment build tasks for pancakes projects",
   "main": "lib/pancakes.syrup.js",
   "repository": {
