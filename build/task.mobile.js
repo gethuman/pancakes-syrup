@@ -116,7 +116,6 @@ module.exports = function (gulp, opts) {
                 .pipe(concat(outputPrefix + '.' + appName + '.css'))
                 .pipe(minifyCSS())
                 .pipe(gulp.dest('./mobile/' + appName + '/www/css'));
-
         };
 
         tasks['img' + appName] = function () {

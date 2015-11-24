@@ -9,6 +9,7 @@ var path        = require('path');
 var streamqueue = require('streamqueue');
 var concat      = require('gulp-concat');
 var less        = require('gulp-less');
+var sass        = require('gulp-sass');
 var buffer      = require('gulp-buffer');
 var objMode     = { objectMode: true };
 
@@ -28,8 +29,15 @@ function generateCss(gulp, opts) {
     var appRootDir = path.normalize(rootDir + '/app');
     var commonLesPaths = [ path.normalize(appRootDir + '/common/styles') ];
     var appDir;
+    var isMobile = false;
 
     _.each(opts.appConfigs, function (appConfig, appName) {
+
+        // hack for now...if a mobile app, then do something different
+        if (appConfig.isMobile) {
+            isMobile = true;
+        }
+
         appDir = path.normalize(appRootDir + '/' + appName + '/');
         if (appName !== 'common' && !appConfig.isMobile) {
             appFiles.push('app/' + appName + '/layouts/' + appName + '.layout.less');
@@ -41,22 +49,33 @@ function generateCss(gulp, opts) {
         }
     });
 
-    return streamqueue(objMode,
-        streamqueue(objMode,
-            gulp.src(cssLibs)
-                .pipe(concat(outputPrefix + '.libs.less'))
-                .pipe(less())
+    if (isMobile) {
+        return gulp.src([
+            'app/**/styles/*.scss',
+            'app/**/partials/*.scss',
+            'app/**/pages/*.scss'
+        ])
+            .pipe(sass())
+            .pipe(concat(outputPrefix + '.all.css'))
+    }
+    else {
+        return streamqueue(objMode,
+            streamqueue(objMode,
+                gulp.src(cssLibs)
+                    .pipe(concat(outputPrefix + '.libs.less'))
+                    .pipe(less())
+                    .pipe(buffer()),
+                gulp.src(cssCommon)
+            )
+                .pipe(concat(outputPrefix + '.common.less'))
+                .pipe(less({ paths: commonLesPaths }))
                 .pipe(buffer()),
-            gulp.src(cssCommon)
+            gulp.src(appFiles)
         )
-            .pipe(concat(outputPrefix + '.common.less'))
-            .pipe(less({ paths: commonLesPaths }))
-            .pipe(buffer()),
-        gulp.src(appFiles)
-    )
-        .pipe(concat(outputPrefix + '.all.less'))
-        .pipe(less({ paths: appLessPaths }))
-        .pipe(buffer());
+            .pipe(concat(outputPrefix + '.all.less'))
+            .pipe(less({ paths: appLessPaths }))
+            .pipe(buffer());
+    }
 }
 
 // export functions
