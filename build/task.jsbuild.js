@@ -59,28 +59,25 @@ module.exports = function (gulp, opts) {
     _.each(opts.appConfigs, function (appConfig, appName) {
         var appTaskName = 'jsbuild.' + appName;
 
-        if (!appConfig.isMobile) {
+        // add app tasks to the list
+        apps.push(appTaskName);
 
-            // add app tasks to the list
-            apps.push(appTaskName);
+        // for the base (i.e. jsbuild.answers)
+        tasks[appName] = [appTaskName + 'App', appTaskName + 'UI', appTaskName + 'Utils', appTaskName + 'Other'];
 
-            // for the base (i.e. jsbuild.answers)
-            tasks[appName] = [appTaskName + 'App', appTaskName + 'UI', appTaskName + 'Utils', appTaskName + 'Other'];
+        // now each of the items
+        addTask(appName, 'App', 'generateAppCore');
+        addTask(appName, 'Utils', 'generateAppUtils');
+        addTask(appName, 'Other', 'generateAppOther');
 
-            // now each of the items
-            addTask(appName, 'App', 'generateAppCore');
-            addTask(appName, 'Utils', 'generateAppUtils');
-            addTask(appName, 'Other', 'generateAppOther');
-
-            // common UI added below, but others add here
-            if (appName === 'common') {
-                addTask(appName, 'UIRaw', 'generateAppUI');
-                commonUI.push(appTaskName + 'UIRaw');
-            }
-            else {
-                addTask(appName, 'UI', 'generateAppUI');
-                commonUI.push(appTaskName + 'UI');
-            }
+        // common UI added below, but others add here
+        if (appName === 'common') {
+            addTask(appName, 'UIRaw', 'generateAppUI');
+            commonUI.push(appTaskName + 'UIRaw');
+        }
+        else {
+            addTask(appName, 'UI', 'generateAppUI');
+            commonUI.push(appTaskName + 'UI');
         }
     });
 
