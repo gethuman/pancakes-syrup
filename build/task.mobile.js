@@ -6,14 +6,15 @@
  */
 var _           = require('lodash');
 var path        = require('path');
+var fs          = require('fs');
 var del         = require('del');
 var concat      = require('gulp-concat');
 var rename      = require('gulp-rename');
 var sass        = require('gulp-sass');
 var minifyCSS   = require('gulp-minify-css');
 var streamqueue = require('streamqueue');
-var objMode     = { objectMode: true };
 var jsStreams   = require('./streams.jsbuild');
+var objMode     = { objectMode: true };
 
 module.exports = function (gulp, opts) {
     opts = opts || {};
@@ -75,19 +76,51 @@ module.exports = function (gulp, opts) {
 
         // for layout we are converting a ui component to basic HTML
         tasks['layout' + appName] = function () {
-            return gulp.src('app/' + appName + '/layouts/' + appName + '.layout.js')
-                .pipe(pancakes({ transformer: 'uipart', htmlOnly: true }))
-                .pipe(rename('index.html'))
-                .pipe(gulp.dest(mobileAppDir));
-        };
 
-        /* // for mobile, for now, just bake it all into 1 file...
-        tasks['jslib' + appName] = function () {
-            return jsStreams.generateLibJs(gulp, mobileOpts)
-                .pipe(concat(opts.outputPrefix + '.' + appName + '.lib.js'))
-                .pipe(gulp.dest(mobileAppDir + '/js'));
+            if (appName === 'contact') {
+                var sidebarLayout = require(opts.targetDir + '/app/common/layouts/sidebar.layout.js');
+                var contactLayout = require(opts.targetDir + '/app/contact/layouts/contact.layout.js');
+
+                // first generate the sidebarLayout
+                var sidebarOpts = _.extend({
+                    filePath: 'app/common/layouts/sidebar.layout.js',
+                    moduleName: 'sidebarLayout',
+                    appName: 'contact',
+                    isMobile: true,
+                    htmlOnly: true,
+                    transformer: 'uipart',
+                    clientType: 'ng'
+                }, opts);
+                var sidebarLayoutContent = pancakes.transform(sidebarLayout, sidebarOpts, sidebarOpts);
+
+                // now get the full page
+                var contactOpts = _.extend({
+                    filePath: 'app/contact/layouts/contact.layout.js',
+                    moduleName: 'contactLayout',
+                    appName: 'contact',
+                    isMobile: true,
+                    htmlOnly: true,
+                    pageContent: sidebarLayoutContent,
+                    transformer: 'uipart',
+                    clientType: 'ng'
+                }, opts);
+                var contactLayoutContent = pancakes.transform(contactLayout, contactOpts, contactOpts);
+
+                // this is a complete hack. Issue with sideview.layout where "doIt('sdf')" gets
+                // translated to "doIt(\\'sdf\\')" in the html. no idea why, but we need to get rid
+                // of the \\. since this only affects the contact sideview.layout, safe to do this
+                // for now, but remove in the future
+                contactLayoutContent = contactLayoutContent.replace(/\\\\/g, '');
+
+                fs.writeFileSync(opts.targetDir + '/' + mobileAppDir + '/index.html', contactLayoutContent);
+            }
+            else {
+                return gulp.src('app/' + appName + '/layouts/' + appName + '.layout.js')
+                    .pipe(pancakes({ transformer: 'uipart', htmlOnly: true }))
+                    .pipe(rename('index.html'))
+                    .pipe(gulp.dest(mobileAppDir));
+            }
         };
-        */
 
         tasks['js' + appName] = function () {
             return streamqueue(objMode,
@@ -97,7 +130,7 @@ module.exports = function (gulp, opts) {
                 jsStreams.generatePluginUtils(gulp, opts),
                 jsStreams.generateUtils(gulp, opts),
                 jsStreams.generateApi(gulp, opts),
-                jsStreams.generateAppJs(appName, gulp, opts)
+                jsStreams.generateAppJs(appName, gulp, mobileOpts)
             )
                 .pipe(concat(opts.outputPrefix + '.' + appName + '.js'))
                 .pipe(gulp.dest(mobileAppDir + '/js'));

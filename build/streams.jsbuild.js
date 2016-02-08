@@ -24,7 +24,7 @@ function generateAppCore(appName, gulp, opts) {
 
     return streamqueue(objMode,
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
-            .pipe(pancakes({ transformer: 'app' })),
+            .pipe(pancakes({ transformer: 'app', isMobile: opts.isMobile })),
         gulp.src(['app/' + appName + '/ng.config/*.js'])
             .pipe(pancakes({ ngType: 'config', transformer: 'basic', isClient: true })),
         gulp.src(['app/' + appName + '/' + appName + '.app.js'])
