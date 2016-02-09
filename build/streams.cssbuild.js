@@ -34,7 +34,7 @@ function generateCss(gulp, opts) {
     _.each(opts.appConfigs, function (appConfig, appName) {
 
         // hack for now...if a mobile app, then do something different
-        if (appConfig.isMobile) {
+        if (appConfig.isMobile && appName !== 'contact') {
             isMobile = true;
         }
 

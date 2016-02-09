@@ -76,7 +76,7 @@ module.exports = function (gulp, opts) {
                 jsbuild.generateCommonJs(gulp, opts).pipe(uglify())
             ).pipe(concat(jsCommonName));
 
-            //return jsStream.pipe(gulp.dest(__dirname + '/../../../'));
+            //return cssStream.pipe(gulp.dest(__dirname + '/../..'));
 
             // array will contains streams for each custom JS and CSS file going to s3
             var buildArr = [
