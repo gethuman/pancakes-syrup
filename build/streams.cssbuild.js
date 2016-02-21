@@ -56,7 +56,7 @@ function generateCss(gulp, opts) {
             'app/**/pages/*.scss'
         ])
             .pipe(sass())
-            .pipe(concat(outputPrefix + '.all.css'))
+            .pipe(concat(outputPrefix + '.all.css'));
     }
     else {
         return streamqueue(objMode,

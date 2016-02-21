@@ -113,6 +113,8 @@ module.exports = function (gulp, opts) {
                 contactLayoutContent = contactLayoutContent.replace(/\\\\/g, '');
 
                 fs.writeFileSync(opts.targetDir + '/' + mobileAppDir + '/index.html', contactLayoutContent);
+
+                return true;
             }
             else {
                 return gulp.src('app/' + appName + '/layouts/' + appName + '.layout.js')
