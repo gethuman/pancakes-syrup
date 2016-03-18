@@ -27,6 +27,9 @@ module.exports = function (gulp, opts) {
         },
         font: function () {
             return gulp.src([assetsDir + '/fonts/*'])
+                .pipe(rename(function (path) {
+                    path.basename += '.' + opts.timestamp;
+                }))
                 .pipe(gulp.dest(distDir + 'fonts'));
         },
         js: function () {

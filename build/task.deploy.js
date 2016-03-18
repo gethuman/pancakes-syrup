@@ -25,7 +25,7 @@ module.exports = function (gulp, opts) {
     opts = opts || {};
     opts.deploy = true;
 
-    var timestamp       = (new Date()).getTime() + '';
+    var timestamp       = opts.timestamp || (new Date()).getTime() + '';
     var outputPrefix    = opts.outputPrefix;
     var config          = opts.config || {};
     var env             = opts.env;
