@@ -14,6 +14,7 @@ var eventStream = require('event-stream');
 var streamqueue = require('streamqueue');
 var rename      = require('gulp-rename');
 var concat      = require('gulp-concat');
+var replace     = require('gulp-replace');
 var uglify      = require('gulp-uglify');
 var minifyCSS   = require('gulp-minify-css');
 var gutil       = require('gulp-util');
@@ -68,6 +69,10 @@ module.exports = function (gulp, opts) {
             var newFiles = [cssName, jsCommonName];
 
             var cssStream = cssbuild.generateCss(gulp, opts)
+                .pipe(replace(/gh\.eot/g, 'gh.' + timestamp + '.eot'))
+                .pipe(replace(/gh\.woff/g, 'gh.' + timestamp + '.woff'))
+                .pipe(replace(/gh\.ttf/g, 'gh.' + timestamp + '.ttf'))
+                .pipe(replace(/gh\.svg/g, 'gh.' + timestamp + '.svg'))
                 .pipe(rename(cssName))
                 .pipe(minifyCSS({ rebase: false }));
 

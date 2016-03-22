@@ -10,7 +10,6 @@ var streamqueue = require('streamqueue');
 var concat      = require('gulp-concat');
 var less        = require('gulp-less');
 var sass        = require('gulp-sass');
-var replace     = require('gulp-replace');
 var buffer      = require('gulp-buffer');
 var objMode     = { objectMode: true };
 
@@ -21,7 +20,6 @@ var objMode     = { objectMode: true };
  * @returns {*}
  */
 function generateCss(gulp, opts) {
-    var timestamp = opts.timestamp || (new Date()).getTime() + '';
     var cssLibs = opts.cssLibs || [];
     var cssCommon = opts.cssCommon || [];
     var outputPrefix = opts.outputPrefix || 'app';
@@ -76,11 +74,7 @@ function generateCss(gulp, opts) {
         )
             .pipe(concat(outputPrefix + '.all.less'))
             .pipe(less({ paths: appLessPaths }))
-            .pipe(buffer())
-            .pipe(replace(/gh\.eot/g, 'gh.' + timestamp + '.eot'))
-            .pipe(replace(/gh\.woff/g, 'gh.' + timestamp + '.woff'))
-            .pipe(replace(/gh\.ttf/g, 'gh.' + timestamp + '.ttf'))
-            .pipe(replace(/gh\.svg/g, 'gh.' + timestamp + '.svg'));
+            .pipe(buffer());
     }
 }
 
