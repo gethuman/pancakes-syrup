@@ -29,13 +29,6 @@ module.exports = function (gulp, opts) {
             return gulp.src([assetsDir + '/fonts/*'])
                 .pipe(gulp.dest(distDir + 'fonts'));
         },
-        fontDeploy: function () {
-            return gulp.src([assetsDir + '/fonts/*'])
-                .pipe(rename(function (path) {
-                    path.basename += '.' + opts.timestamp;
-                }))
-                .pipe(gulp.dest(distDir + 'fonts'));
-        },
         js: function () {
             return gulp.src(jsAssets)
                 .pipe(rename(function (path) {
@@ -43,6 +36,6 @@ module.exports = function (gulp, opts) {
                 }))
                 .pipe(gulp.dest(distDir + 'js'));
         },
-        '': ['assets.img', 'assets.html', 'assets.font', 'assets.fontDeploy', 'assets.js']
+        '': ['assets.img', 'assets.html', 'assets.font', 'assets.js']
     };
 };

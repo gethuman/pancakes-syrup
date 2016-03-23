@@ -43,6 +43,15 @@ module.exports = function (gulp, opts) {
 
     return {
 
+        fonts: function () {
+            var stream = gulp.src([assetsDir + delim + 'fonts/*'])
+                .pipe(rename(function (path) {
+                    path.basename += '.' + opts.timestamp;
+                }));
+
+            return s3.uploadFromStream(stream, 'fonts', s3opts);
+        },
+
         // copy all the local assets to the target s3 bucket
         assets: function () {
             if (!env) {
@@ -51,7 +60,6 @@ module.exports = function (gulp, opts) {
 
             gutil.log('deploying assets to CDN');
             return eventStream.merge(
-                s3.uploadFiles(gulp, [assetsDir + delim + 'fonts/*'], 'fonts', s3opts),
                 s3.uploadFiles(gulp, [assetsDir + delim + 'html/*'], 'html', s3opts),
                 s3.uploadFiles(gulp, [assetsDir + delim + 'img/*'], 'img', s3opts),
                 s3.uploadFiles(gulp, jsAssets, 'js', s3opts)
@@ -137,7 +145,7 @@ module.exports = function (gulp, opts) {
 
         // deploy everything (i.e. assets, jscss, code)
         '': {
-            deps: ['deploy.assets', 'deploy.jscss'],
+            deps: ['deploy.fonts', 'deploy.assets', 'deploy.jscss'],
             task: function () {
                 if (!env) {
                     throw new Error('env param must be set for deploy tasks');
