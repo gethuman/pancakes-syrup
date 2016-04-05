@@ -7,6 +7,7 @@
 var cssbuild    = require('./streams.cssbuild');
 var jsbuild     = require('./streams.jsbuild');
 var s3          = require('./streams.s3');
+var awspublish  = require('gulp-awspublish');
 var aws         = require('./streams.aws');
 var Q           = require('q');
 var _           = require('lodash');
@@ -32,6 +33,7 @@ module.exports = function (gulp, opts) {
     var env             = opts.env;
     var assetsDir       = opts.assetsDir || (opts.rootDir + delim + 'assets');
     var jsAssets        = opts.jsAssets;
+    var cssAssets       = opts.cssAssets;
     var awsConfig       = config.aws || {};
     var s3opts = {
         accessKeyId:        awsConfig.keyId,
@@ -58,11 +60,29 @@ module.exports = function (gulp, opts) {
                 throw new Error('env param must be set for deploy    tasks');
             }
 
+            // create publisher for css assets
+            var publisher = awspublish.create(s3opts);
+
             gutil.log('deploying assets to CDN');
             return eventStream.merge(
                 s3.uploadFiles(gulp, [assetsDir + delim + 'html/*'], 'html', s3opts),
                 s3.uploadFiles(gulp, [assetsDir + delim + 'img/*'], 'img', s3opts),
-                s3.uploadFiles(gulp, jsAssets, 'js', s3opts)
+                s3.uploadFiles(gulp, jsAssets, 'js', s3opts),
+
+                // one off case for css assets which is the async font file
+                gulp.src(cssAssets)
+                    .pipe(replace(/gh\.eot/g, 'gh.' + timestamp + '.eot'))
+                    .pipe(replace(/gh\.woff/g, 'gh.' + timestamp + '.woff'))
+                    .pipe(replace(/gh\.ttf/g, 'gh.' + timestamp + '.ttf'))
+                    .pipe(replace(/gh\.svg/g, 'gh.' + timestamp + '.svg'))
+                    .pipe(rename(function (path) {
+                        path.dirname = 'css';
+                    }))
+                    .pipe(s3.gzip({}))
+                    .pipe(publisher.publish({
+                        'Cache-Control': 'max-age=315360000, no-transform, public'
+                    }))
+                    .pipe(s3.reporter({}))
             );
         },
 

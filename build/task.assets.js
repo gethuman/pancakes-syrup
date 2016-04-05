@@ -11,6 +11,7 @@ module.exports = function (gulp, opts) {
     var distDir = './' + (opts.distDir || 'dist') + '/';
     var assetsDir = opts.assetsDir || 'assets';
     var jsAssets = opts.jsAssets;
+    var cssAssets = opts.cssAssets;
 
     return {
         mobile: function () {
@@ -36,6 +37,13 @@ module.exports = function (gulp, opts) {
                 }))
                 .pipe(gulp.dest(distDir + 'js'));
         },
-        '': ['assets.img', 'assets.html', 'assets.font', 'assets.js']
+        css: function () {
+            return gulp.src(cssAssets)
+                .pipe(rename(function (path) {
+                    path.dirname = '';
+                }))
+                .pipe(gulp.dest(distDir + 'css'));
+        },
+        '': ['assets.img', 'assets.html', 'assets.font', 'assets.js', 'assets.css']
     };
 };
