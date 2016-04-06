@@ -78,11 +78,11 @@ module.exports = function (gulp, opts) {
                     .pipe(rename(function (path) {
                         path.dirname = 'css';
                     }))
-                    .pipe(publisher.gzip({}))
+                    .pipe(awspublish.gzip({}))
                     .pipe(publisher.publish({
                         'Cache-Control': 'max-age=315360000, no-transform, public'
                     }))
-                    .pipe(publisher.reporter({}))
+                    .pipe(awspublish.reporter({}))
             );
         },
 
