@@ -33,6 +33,10 @@ module.exports = function (gulp, opts) {
             return jsStreams.generateLibJs(gulp, opts)
                 .pipe(gulp.dest(distJs));
         },
+        lazy: function () {
+            return jsStreams.generateLazyJs(gulp, opts)
+                .pipe(gulp.dest(distJs));
+        },
         pancakesApp: function () {
             return jsStreams.generatePancakesApp(gulp, opts).pipe(gulp.dest(distJs));
         },
@@ -45,7 +49,8 @@ module.exports = function (gulp, opts) {
         api: function () {
             return jsStreams.generateApi(gulp, opts).pipe(gulp.dest(distJs));
         },
-        '': ['jsbuild.libs', 'jsbuild.pancakesApp', 'jsbuild.pluginUtils', 'jsbuild.apps', 'jsbuild.utils', 'jsbuild.api']
+        '': ['jsbuild.libs', 'jsbuild.lazy', 'jsbuild.pancakesApp',
+                'jsbuild.pluginUtils', 'jsbuild.apps', 'jsbuild.utils', 'jsbuild.api']
     };
 
     function addTask(appName, taskNameExtra, fnName) {

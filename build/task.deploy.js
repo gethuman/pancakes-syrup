@@ -94,6 +94,7 @@ module.exports = function (gulp, opts) {
 
             var cssName = outputPrefix + '.all.' + timestamp + '.css';
             var jsCommonName = outputPrefix + '.common.' + timestamp + '.js';
+            var jsLazyName = outputPrefix + '.lazy.' + timestamp + '.js';
             var newFiles = [cssName, jsCommonName];
 
             var cssStream = cssbuild.generateCss(gulp, opts)
@@ -109,12 +110,14 @@ module.exports = function (gulp, opts) {
                 jsbuild.generateCommonJs(gulp, opts).pipe(uglify())
             ).pipe(concat(jsCommonName));
 
-            //return cssStream.pipe(gulp.dest(__dirname + '/../..'));
+            var lazyStream = jsbuild.generateLazyJs(gulp, opts)
+                .pipe(rename(jsLazyName));
 
             // array will contains streams for each custom JS and CSS file going to s3
             var buildArr = [
                 s3.uploadFromStream(cssStream, 'css', s3opts),
-                s3.uploadFromStream(jsStream, 'js', s3opts)
+                s3.uploadFromStream(jsStream, 'js', s3opts),
+                s3.uploadFromStream(lazyStream, 'js', s3opts)
             ];
 
             _.each(opts.appConfigs, function (appConfig, appName) {

@@ -19,6 +19,11 @@ function generateLibJs(gulp, opts) {
         .pipe(concat(opts.outputPrefix + '.libs.js'));
 }
 
+function generateLazyJs(gulp, opts) {
+    return gulp.src(opts.jsLazy)
+        .pipe(concat(opts.outputPrefix + '.lazy.js'));
+}
+
 function generateAppCore(appName, gulp, opts) {
     var pancakes = opts.pancakes;
 
@@ -142,6 +147,7 @@ function generateCommonJs(gulp, opts) {
 
 module.exports = {
     generateLibJs:          generateLibJs,
+    generateLazyJs:         generateLazyJs,
 
     generateAppCore:        generateAppCore,
     generateAppUI:          generateAppUI,
