@@ -18,7 +18,7 @@ module.exports = function (gulp, opts) {
 
         nodemon({
             script: startScript,
-            watch:  ['middleware', 'dist']
+            watch:  ['middleware', 'dist', 'utils/translations.json']
         })
             .on('restart', function () {
                 if (shouldLiveReload) {
