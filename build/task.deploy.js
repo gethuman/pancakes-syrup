@@ -33,7 +33,7 @@ module.exports = function (gulp, opts) {
     var env             = opts.env;
     var assetsDir       = opts.assetsDir || (opts.rootDir + delim + 'assets');
     var jsAssets        = opts.jsAssets;
-    var cssAssets       = opts.cssAssets;
+    var cssAssets       = opts.cssAssets || [];
     var awsConfig       = config.aws || {};
     var s3opts = {
         accessKeyId:        awsConfig.keyId,
