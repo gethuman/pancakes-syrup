@@ -197,7 +197,9 @@ function updateEnvironmentVariables(newVars, envVars, awsConfig) {
     _.each(envVars, function (val, key) {
         var secure = isSecure(key);
         if (key !== 'GOOGLE_KEY' && key !== 'type' && val) {
-            env.push({ Key: key, Value: val + '', Secure: secure });
+            val = val + '';
+            val = val.replace(/\n/g, '\\n');
+            env.push({ Key: key, Value: val, Secure: secure });
         }
     });
 
