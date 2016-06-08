@@ -1,4 +1,4 @@
-/**
+ /**
  * Author: Jeff Whelpley
  * Date: 1/20/15
  *
@@ -122,9 +122,9 @@ module.exports = function (gulp, opts) {
 
             _.each(opts.appConfigs, function (appConfig, appName) {
                 if (appName !== 'common') {
-                    var appFileName = outputPrefix + '.' + appName + '.' + timestamp + '.js';
+                    var appFileName = outputPrefix + '.' + appName + '.combo.' + timestamp + '.js';
                     newFiles.push(appFileName);
-                    var appStream = jsbuild.generateAppJs(appName, gulp, opts)
+                    var appStream = jsbuild.generateComboJs(appName, gulp, opts)
                         .pipe(rename(appFileName))
                         .pipe(uglify());
 

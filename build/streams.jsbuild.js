@@ -145,7 +145,36 @@ function generateCommonJs(gulp, opts) {
         .pipe(concat(opts.outputPrefix + '.common.js'));
 }
 
+/**
+ * Generate one combined Javascript file for a given app (ex: gh.common.js and gh.contact.js become gh.contact.combo.js)
+ * @param appName
+ * @param gulp
+ * @param opts
+ */
+function generateComboJs(appName, gulp, opts) {
+    var pancakes = opts.pancakes;
+
+    if (!pancakes) {
+        throw new Error('batter.whip() must include pancakes in opts');
+    }
+
+    return streamqueue(objMode,
+        generateAppCore(appName, gulp, opts),
+        generateAppJs('common', gulp, opts),
+        generateAppJs(appName, gulp, opts),
+        generatePancakesApp(gulp, opts),
+        generatePluginUtils(gulp, opts),
+        eventStream.merge(
+            generateUtils(gulp, opts),
+            generateApi(gulp, opts)
+        )
+    )
+        .pipe(concat(opts.outputPrefix + '.' + appName + '.combo.js'));
+}
+
 module.exports = {
+    generateComboJs:        generateComboJs,
+
     generateLibJs:          generateLibJs,
     generateLazyJs:         generateLazyJs,
 
