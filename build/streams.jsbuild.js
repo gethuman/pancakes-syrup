@@ -159,15 +159,18 @@ function generateComboJs(appName, gulp, opts) {
     }
 
     return streamqueue(objMode,
-        generateAppCore(appName, gulp, opts),
-        generateAppJs('common', gulp, opts),
-        generateAppJs(appName, gulp, opts),
-        generatePancakesApp(gulp, opts),
-        generatePluginUtils(gulp, opts),
-        eventStream.merge(
-            generateUtils(gulp, opts),
-            generateApi(gulp, opts)
-        )
+        generateLibJs(gulp, opts),
+        generateCommonJs(gulp, opts),
+        generateAppJs(appName, gulp, opts)
+
+        //ZA: was causing angular not found issue
+        //generateAppJs('common', gulp, opts),
+        //generatePancakesApp(gulp, opts),
+        //generatePluginUtils(gulp, opts),
+        //eventStream.merge(
+        //    generateUtils(gulp, opts),
+        //    generateApi(gulp, opts)
+        //)
     )
         .pipe(concat(opts.outputPrefix + '.' + appName + '.combo.js'));
 }
