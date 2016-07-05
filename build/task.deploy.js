@@ -17,7 +17,7 @@ var rename      = require('gulp-rename');
 var concat      = require('gulp-concat');
 var replace     = require('gulp-replace');
 var uglify      = require('gulp-uglify');
-var minifyCSS   = require('gulp-minify-css');
+var minifyCSS   = require('gulp-clean-css');
 var gutil       = require('gulp-util');
 var path        = require('path');
 var delim       = path.normalize('/');
@@ -47,8 +47,8 @@ module.exports = function (gulp, opts) {
 
         fonts: function () {
             var stream = gulp.src([assetsDir + delim + 'fonts/*'])
-                .pipe(rename(function (path) {
-                    path.basename += '.' + opts.timestamp;
+                .pipe(rename(function (filePath) {
+                    filePath.basename += '.' + opts.timestamp;
                 }));
 
             return s3.uploadFromStream(stream, 'fonts', s3opts);
@@ -75,8 +75,8 @@ module.exports = function (gulp, opts) {
                     .pipe(replace(/gh\.woff/g, 'gh.' + timestamp + '.woff'))
                     .pipe(replace(/gh\.ttf/g, 'gh.' + timestamp + '.ttf'))
                     .pipe(replace(/gh\.svg/g, 'gh.' + timestamp + '.svg'))
-                    .pipe(rename(function (path) {
-                        path.dirname = 'css';
+                    .pipe(rename(function (filePath) {
+                        filePath.dirname = 'css';
                     }))
                     .pipe(awspublish.gzip({}))
                     .pipe(publisher.publish({
